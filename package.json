@@ -1,0 +1,31 @@
+{
+  "name": "command-processor",
+  "version": "1.0.0",
+  "description": "Processor that executes command objects.",
+  "main": "main.js",
+  "scripts": {
+    "test": "mocha --recursive"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/c-butcher/command-processor.git"
+  },
+  "keywords": [
+    "Command",
+    "Commands",
+    "Functions",
+    "Processor",
+    "Processes"
+  ],
+  "author": "Chris Butcher",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/c-butcher/command-processor/issues"
+  },
+  "homepage": "https://github.com/c-butcher/command-processor#readme",
+  "dependencies": {
+    "chai": "^4.2.0",
+    "formatted-error": "^1.0.0",
+    "mocha": "^5.2.0"
+  }
+}
