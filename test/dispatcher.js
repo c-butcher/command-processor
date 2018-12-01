@@ -6,27 +6,27 @@ describe('Dispatcher', function() {
     describe('constructor()', function() {
         it('passes when dispatcher does not start traversing immediately', function() {
             let dispatcher = new Dispatcher();
-            chai.assert.isFalse(dispatcher.isTraversing());
+            chai.assert.isFalse(dispatcher.isProcessing());
         });
     });
 
-    describe('isTraversing()', function() {
+    describe('isProcessing()', function() {
         it('passes when the dispatcher is traversing', function() {
             let dispatcher = new Dispatcher();
-            chai.assert.isFalse(dispatcher.isTraversing());
+            chai.assert.isFalse(dispatcher.isProcessing());
 
-            dispatcher.startTraversing();
-            chai.assert.isTrue(dispatcher.isTraversing());
+            dispatcher.startProcessing();
+            chai.assert.isTrue(dispatcher.isProcessing());
         });
 
         it('fails when the dispatcher is not traversing', function() {
             let dispatcher = new Dispatcher();
 
-            dispatcher.startTraversing();
-            chai.assert.isTrue(dispatcher.isTraversing());
+            dispatcher.startProcessing();
+            chai.assert.isTrue(dispatcher.isProcessing());
 
-            dispatcher.stopTraversing();
-            chai.assert.isFalse(dispatcher.isTraversing());
+            dispatcher.stopProcessing();
+            chai.assert.isFalse(dispatcher.isProcessing());
         });
     });
 });

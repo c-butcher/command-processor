@@ -1,18 +1,18 @@
 class Dispatcher {
     constructor() {
-        this._isTraversing = false;
+        this._processing = false;
     }
 
-    startTraversing() {
-        this._isTraversing = true;
+    startProcessing() {
+        this._processing = true;
     }
 
-    stopTraversing() {
-        this._isTraversing = false;
+    stopProcessing() {
+        this._processing = false;
     }
 
-    isTraversing() {
-        return this._isTraversing;
+    isProcessing() {
+        return this._processing;
     }
 }
 
