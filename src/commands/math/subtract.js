@@ -50,14 +50,14 @@ class SubtractCommand extends Command {
      * @returns {{value: number}}
      */
     execute(dispatcher) {
-        let start = parseFloat(this.inputs.get('start'));
+        let start = this.inputs.get('start');
         if (!start) {
-            start = parseFloat(this.options.get('start'));
+            start = this.options.get('start');
         }
 
-        let subtraction = parseFloat(this.inputs.get('subtraction'));
+        let subtraction = this.inputs.get('subtraction');
         if (!subtraction) {
-            subtraction = parseFloat(this.options.get('subtraction'));
+            subtraction = this.options.get('subtraction');
         }
 
         let value = start - subtraction;

@@ -50,14 +50,14 @@ class DivideCommand extends Command {
      * @returns {{value: number}}
      */
     execute(dispatcher) {
-        let start = parseFloat(this.inputs.get('start'));
+        let start = this.inputs.get('start');
         if (!start) {
-            start = parseFloat(this.options.get('start'));
+            start = this.options.get('start');
         }
 
-        let divisor = parseFloat(this.inputs.get('divisor'));
+        let divisor = this.inputs.get('divisor');
         if (!divisor) {
-            divisor = parseFloat(this.options.get('divisor'));
+            divisor = this.options.get('divisor');
         }
 
         let value = start / divisor;

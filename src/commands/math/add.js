@@ -38,8 +38,8 @@ class AddCommand extends Command {
      * @returns {{value: number}}
      */
     execute(dispatcher) {
-        let start = parseFloat(this.inputs.get('start'));
-        let addition = parseFloat(this.inputs.get('addition'));
+        let start = this.inputs.get('start');
+        let addition = this.inputs.get('addition');
 
         let value = start + addition;
 

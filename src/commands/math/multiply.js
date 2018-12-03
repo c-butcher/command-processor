@@ -50,14 +50,14 @@ class MultiplyCommand extends Command {
      * @returns {{value: number}}
      */
     execute(dispatcher) {
-        let start = parseFloat(this.inputs.get('start'));
+        let start = this.inputs.get('start');
         if (!start) {
-            start = parseFloat(this.options.get('start'));
+            start = this.options.get('start');
         }
 
-        let multiplier = parseFloat(this.inputs.get('multiplier'));
+        let multiplier = this.inputs.get('multiplier');
         if (!multiplier) {
-            multiplier = parseFloat(this.options.get('multiplier'));
+            multiplier = this.options.get('multiplier');
         }
 
         let value = start * multiplier;
