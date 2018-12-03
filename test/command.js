@@ -35,7 +35,7 @@ describe('Command', function() {
 
     describe('process(dispatcher)', () => {
         it('passes when an object is returned', async () => {
-            let dispatcher = new Dispatcher();
+            let dispatcher = new Dispatcher(this);
             let command = new Math.AddCommand([{
                 name: 'start',
                 from: 'value',
@@ -54,7 +54,7 @@ describe('Command', function() {
         });
 
         it('passes when inputs are loaded', async () => {
-            let dispatcher = new Dispatcher();
+            let dispatcher = new Dispatcher(this);
             dispatcher.startProcessing();
 
             let inputs = [{
@@ -78,7 +78,7 @@ describe('Command', function() {
 
     describe('getResult(name, defaultValue)', () => {
         it('passes when result exists', async () => {
-            let dispatcher = new Dispatcher();
+            let dispatcher = new Dispatcher(this);
             dispatcher.startProcessing();
 
             let inputs = [{
@@ -113,7 +113,7 @@ describe('Command', function() {
 
     describe('getResults()', () => {
         it('passes when asking for finished results', async () => {
-            let dispatcher = new Dispatcher();
+            let dispatcher = new Dispatcher(this);
             dispatcher.startProcessing();
 
             let inputs = [{
@@ -138,7 +138,7 @@ describe('Command', function() {
         });
 
         it('fails null when command is not finished', async () => {
-            let dispatcher = new Dispatcher();
+            let dispatcher = new Dispatcher(this);
             dispatcher.startProcessing();
 
             let inputs = [{
@@ -162,7 +162,7 @@ describe('Command', function() {
 
     describe('isFinished()', () => {
         it('passes when the command is finished', async () => {
-            let dispatcher = new Dispatcher();
+            let dispatcher = new Dispatcher(this);
             dispatcher.startProcessing();
 
             let command = new Math.AddCommand();
@@ -173,7 +173,7 @@ describe('Command', function() {
         });
 
         it ('fails when the command has not finished', async () => {
-            let dispatcher = new Dispatcher();
+            let dispatcher = new Dispatcher(this);
             dispatcher.startProcessing();
 
             let command = new Math.AddCommand();

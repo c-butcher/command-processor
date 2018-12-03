@@ -158,7 +158,7 @@ class Command {
             return null;
         }
 
-        return JSON.parse(JSON.stringify(this._results));
+        return Object.assign({}, this._results);
     }
 
     /**
