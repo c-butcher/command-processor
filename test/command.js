@@ -1,7 +1,9 @@
 const chai = require('chai');
 const Command = require('../src/command');
 const Dispatcher = require('../src/dispatcher');
-const IncrementCommand = require('./commands/increment');
+
+const Math = require('../src/commands/math');
+const Primitives = require('../src/commands/primitives');
 
 describe('Command', function() {
 
@@ -14,7 +16,7 @@ describe('Command', function() {
 
         it('passes when child command can instantiate', () => {
             chai.expect(function(){
-                let command = new IncrementCommand([], { value: 0 });
+                let command = new Math.AddCommand();
             }).to.not.throw();
         });
     });
@@ -34,15 +36,19 @@ describe('Command', function() {
     describe('process(dispatcher)', function() {
         it('passes when an object is returned', async () => {
             let dispatcher = new Dispatcher();
-            let increment = new IncrementCommand([{
-                name: 'value',
+            let command = new Math.AddCommand([{
+                name: 'start',
                 from: 'value',
-                command: new IncrementCommand()
+                command: new Primitives.NumberCommand([], { value: 10 })
+            }, {
+                name: 'addition',
+                from: 'value',
+                command: new Primitives.NumberCommand([], { value: 5 })
             }]);
 
             dispatcher.startProcessing();
 
-            let results = await increment.process(dispatcher);
+            let results = await command.process(dispatcher);
 
             chai.assert.isObject(results);
         });
@@ -51,14 +57,17 @@ describe('Command', function() {
             let dispatcher = new Dispatcher();
             dispatcher.startProcessing();
 
-            let options = { start: 10, increment: 4 };
             let inputs = [{
                 name: 'start',
                 from: 'value',
-                command: new IncrementCommand([], options)
+                command: new Primitives.NumberCommand([], { value: 12 })
+            }, {
+                name: 'addition',
+                from: 'value',
+                command: new Primitives.NumberCommand([], { value: 8 })
             }];
 
-            let command = new IncrementCommand(inputs,{ increment: 6 });
+            let command = new Math.AddCommand(inputs);
             let results = await command.process(dispatcher);
 
             chai.assert.isObject(results);
@@ -75,10 +84,14 @@ describe('Command', function() {
             let inputs = [{
                 name: 'start',
                 from: 'value',
-                command: new IncrementCommand()
+                command: new Primitives.NumberCommand([], { value: 0 })
+            }, {
+                name: 'addition',
+                from: 'value',
+                command: new Primitives.NumberCommand([], { value: 8 })
             }];
 
-            let command = new IncrementCommand(inputs);
+            let command = new Math.AddCommand(inputs);
 
             let before  = command.getResult('value');
             let results = await command.process(dispatcher);
@@ -90,7 +103,7 @@ describe('Command', function() {
         });
 
         it('passes when result does not exist', async () => {
-            let command = new IncrementCommand();
+            let command = new Math.AddCommand();
 
             let value = command.getResult('non-existent', 'Default Value');
 
@@ -106,10 +119,14 @@ describe('Command', function() {
             let inputs = [{
                 name: 'start',
                 from: 'value',
-                command: new IncrementCommand()
+                command: new Primitives.NumberCommand([], { value: 0 })
+            }, {
+                name: 'addition',
+                from: 'value',
+                command: new Primitives.NumberCommand([], { value: 8 })
             }];
 
-            let command = new IncrementCommand(inputs);
+            let command = new Math.AddCommand(inputs);
 
             let before  = command.getResults();
             let results = await command.process(dispatcher);
@@ -127,11 +144,15 @@ describe('Command', function() {
             let inputs = [{
                 name: 'start',
                 from: 'value',
-                command: new IncrementCommand()
+                command: new Primitives.NumberCommand([], { value: 0 })
+            }, {
+                name: 'addition',
+                from: 'value',
+                command: new Primitives.NumberCommand([], { value: 8 })
             }];
 
-            let command  = new IncrementCommand(inputs);
-            let results  = command.getResults()
+            let command  = new Math.AddCommand(inputs);
+            let results  = command.getResults();
             let finished = command.isFinished();
 
             chai.assert.isNull(results);
@@ -144,7 +165,7 @@ describe('Command', function() {
             let dispatcher = new Dispatcher();
             dispatcher.startProcessing();
 
-            let command = new IncrementCommand();
+            let command = new Math.AddCommand();
             await command.process(dispatcher);
             let isFinished = command.isFinished();
 
@@ -155,7 +176,7 @@ describe('Command', function() {
             let dispatcher = new Dispatcher();
             dispatcher.startProcessing();
 
-            let command = new IncrementCommand();
+            let command = new Math.AddCommand();
             let isFinished = command.isFinished();
 
             chai.assert.isFalse(isFinished);

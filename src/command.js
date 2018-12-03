@@ -79,9 +79,9 @@ class Command {
 
         return Promise
             .resolve(dispatcher)
-            .then((dispatcher) => this._prepare(dispatcher))
-            .then((dispatcher) => this.execute(dispatcher))
-            .then((results)    => this._finish(results));
+            .then(dispatcher => this._prepare(dispatcher))
+            .then(dispatcher => this.execute(dispatcher))
+            .then(results    => this._finish(results));
     }
 
     /**
@@ -93,20 +93,24 @@ class Command {
      * @returns {Dispatcher}
      */
     async _prepare(dispatcher) {
-        for (let { name, from, command } of this._inputs) {
-            let output = await command.process(dispatcher);
-
-            if (!output || !output[from]) {
-                throw new CommandError("Command '{command}' does not have '{name}' output.", {
-                    name: from,
-                    command: command.constructor.describe().name
-                });
-            }
-
-            this.inputs.set(name, output[from]);
+        for (let i = 0; i < this._inputs.length; i++) {
+            let input = this._inputs[i];
+            await input.command.process(dispatcher)
+                .then(results => this._setInputFromResult(input, results));
         }
 
         return dispatcher;
+    }
+
+    _setInputFromResult(input, results) {
+        if (!results || typeof results[input.from] === "undefined") {
+            throw new CommandError("Command '{command}' does not have '{name}' output.", {
+                name: input.from,
+                command: input.command.constructor.describe().name
+            });
+        }
+
+        this.inputs.set(input.name, results[input.from]);
     }
 
     /**
@@ -154,7 +158,7 @@ class Command {
             return null;
         }
 
-        return Object.assign({}, this._results);
+        return JSON.parse(JSON.stringify(this._results));
     }
 
     /**
