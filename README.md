@@ -18,69 +18,40 @@ completely understand every part about how the command object works.
 const Command = require('command-processor').Command;
 
 class SendEmail extends Command {
-    constructor(inputs = {}) {
-        super(
-            'send_email',
-            "Send Email",
-            "Send a single email to a specific person.",
-            inputs
-        );
-    }
-    
-    defaults() {
+    static describe() {
         return {
-            email: [],
-            subject: null,
-            content: null,
-            headers: [
-                'MIME-Version: 1.0',
-                'Content-Type: text-html'
-            ]
+            key: 'send_email',
+            name: 'Send an Email',
+            description: 'Send a single email',
+            inputs: {
+                email: {
+                    type: 'email',
+                    required: true,
+                    description: "The email address where the email is sent."
+                },
+                subject: {
+                    type: 'string',
+                    required: true,
+                    description: "The subject of the email.",
+                },
+                content: {
+                    type: 'string',
+                    required: true,
+                    description: "The content of the email.",
+                },
+                headers: {
+                    type: 'array',
+                    required: false,
+                    description: "The headers to send with the email."
+                }
+            },
+            outputs: {
+                success: {
+                    type: 'boolean',
+                    description: 'Tells if the email was successfully sent off.'
+                }
+            },
         }
-    }
-    
-    inputs() {
-        return {
-            email: {
-                name: 'email',
-                label: 'Email',
-                type: 'string',
-                description: 'Email address of person you want to send an email to.',
-                required: true,
-            },
-            subject: {
-                name: 'subject',
-                label: 'Subject',
-                type: 'string',
-                description: 'Subject of the email being sent.',
-                required: true,
-            },
-            content: {
-                name: 'content',
-                label: 'Content',
-                type: 'string',
-                description: 'The contents of the email.',
-                required: true,
-            },
-            headers: {
-                name: 'headers',
-                label: 'Content',
-                type: 'array',
-                description: 'List of all the headers that will be sent with the email.',
-                required: false,
-            }
-        };
-    }
-    
-    outputs() {
-        return {
-            success: {
-                name: 'success',
-                label: 'Success',
-                type: 'boolean',
-                description: 'Tells whether the email was successfully sent.',
-            }
-        };
     }
     
     execute(mailer) {
