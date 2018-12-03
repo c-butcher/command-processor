@@ -5,12 +5,12 @@ describe('Dispatcher', function() {
 
     describe('constructor()', function() {
         it('passes when dispatcher is not processing', function() {
-            let dispatcher = new Dispatcher();
+            let dispatcher = new Dispatcher(this);
             chai.assert.isFalse(dispatcher.isProcessing());
         });
 
         it('passes when dispatcher is not stateful', function() {
-            let dispatcher = new Dispatcher();
+            let dispatcher = new Dispatcher(this);
             chai.assert.isFalse(dispatcher.isStateful());
         });
 
@@ -24,7 +24,7 @@ describe('Dispatcher', function() {
 
     describe('isProcessing()', function() {
         it('passes when the dispatcher is processing', function() {
-            let dispatcher = new Dispatcher();
+            let dispatcher = new Dispatcher(this);
             chai.assert.isFalse(dispatcher.isProcessing());
 
             dispatcher.startProcessing();
@@ -32,7 +32,7 @@ describe('Dispatcher', function() {
         });
 
         it('fails when the dispatcher is not processing', function() {
-            let dispatcher = new Dispatcher();
+            let dispatcher = new Dispatcher(this);
 
             dispatcher.startProcessing();
             chai.assert.isTrue(dispatcher.isProcessing());
@@ -44,20 +44,20 @@ describe('Dispatcher', function() {
 
     describe('isStateful()', function() {
         it('passes when the dispatcher is stateful', function() {
-            let dispatcher = new Dispatcher({ stateful: true });
+            let dispatcher = new Dispatcher(this, { stateful: true });
             chai.assert.isTrue(dispatcher.isStateful());
 
         });
 
         it('fails when the dispatcher is not stateful', function() {
-            let dispatcher = new Dispatcher();
+            let dispatcher = new Dispatcher(this);
             chai.assert.isFalse(dispatcher.isStateful());
         });
     });
 
     describe('setStateful()', function() {
         it('passes when you can change the state', function() {
-            let dispatcher = new Dispatcher();
+            let dispatcher = new Dispatcher(this);
             chai.assert.isFalse(dispatcher.isStateful());
 
             dispatcher.setStateful(true);
@@ -69,7 +69,7 @@ describe('Dispatcher', function() {
     describe('reset()', function() {
         it('passes when options get reset to original options.', function() {
             // Starts as stateless and not processing
-            let dispatcher = new Dispatcher();
+            let dispatcher = new Dispatcher(this);
             chai.assert.isFalse(dispatcher.isStateful());
             chai.assert.isFalse(dispatcher.isProcessing());
 

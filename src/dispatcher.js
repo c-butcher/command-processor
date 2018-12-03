@@ -4,15 +4,31 @@ class Dispatcher {
     /**
      * Dispatchers are used to help expose crucial parts of the application layer
      * to our commands, such as the database and template services.
+     *
+     * @param {object} sender
      * @param options
      */
-    constructor(options = {}) {
+    constructor(sender, options = {}) {
+        if (!sender || typeof sender !== 'object') {
+            throw new DispatchError("Argument 'sender' must be an object.");
+        }
+
         if (!options || typeof options !== 'object') {
             throw new DispatchError("Argument 'options' must be an object.");
         }
 
+        this._sender = sender;
         this._options = options;
         this.reset();
+    }
+
+    /**
+     * Returns the process, command or object that sent this dispatcher.
+     *
+     * @returns {Process|Command|object}
+     */
+    getSender() {
+        return this._sender;
     }
 
     /**
