@@ -55,12 +55,28 @@ describe('Process', function() {
     });
 
     describe('run()', () => {
-        it('passes when a process runs once', () => {
+        it('passes when a process is marked as finished', async () => {
+            let dispatcher = new Dispatcher(this);
+            dispatcher.startProcessing();
 
-        });
+            let inputs = [{
+                name: 'start',
+                from: 'value',
+                command: new Primitives.NumberCommand([], { value: 0 })
+            }, {
+                name: 'addition',
+                from: 'value',
+                command: new Primitives.NumberCommand([], { value: 8 })
+            }];
 
-        it('passes when a process can be repeated', () => {
+            let command = new Math.AddCommand(inputs);
+            let process = new Process(dispatcher, command);
 
+            assert.isFalse(process.isFinished());
+
+            await process.run();
+
+            assert.isTrue(process.isFinished());
         });
     });
 
