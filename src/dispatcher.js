@@ -1,3 +1,5 @@
+const DispatchError = require('formatted-error');
+
 class Dispatcher {
     /**
      * Dispatchers are used to help expose crucial parts of the application layer
@@ -5,6 +7,10 @@ class Dispatcher {
      * @param options
      */
     constructor(options = {}) {
+        if (!options || typeof options !== 'object') {
+            throw new DispatchError("Argument 'options' must be an object.");
+        }
+
         this._options = options;
         this.reset();
     }

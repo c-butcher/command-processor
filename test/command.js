@@ -9,31 +9,31 @@ describe('Command', function() {
 
     describe('constructor()', function() {
         it('passes when command cannot instantiate directly', () => {
-            chai.expect(function(){
+            chai.expect(() => {
                 let command = new Command();
             }).to.throw();
         });
 
         it('passes when child command can instantiate', () => {
-            chai.expect(function(){
+            chai.expect(() => {
                 let command = new Math.AddCommand();
             }).to.not.throw();
         });
     });
 
-    describe('describe()', function() {
+    describe('describe()', () => {
         it('passes when an object is returned', () => {
             chai.assert.isObject(Command.describe());
         });
     });
 
-    describe('defaults()', function() {
+    describe('defaults()', () => {
         it('passes when an object is returned', () => {
             chai.assert.isObject(Command.defaults());
         });
     });
 
-    describe('process(dispatcher)', function() {
+    describe('process(dispatcher)', () => {
         it('passes when an object is returned', async () => {
             let dispatcher = new Dispatcher();
             let command = new Math.AddCommand([{
@@ -76,7 +76,7 @@ describe('Command', function() {
         });
     });
 
-    describe('getResult(name, defaultValue)', function() {
+    describe('getResult(name, defaultValue)', () => {
         it('passes when result exists', async () => {
             let dispatcher = new Dispatcher();
             dispatcher.startProcessing();
@@ -111,7 +111,7 @@ describe('Command', function() {
         });
     });
 
-    describe('getResults()', function() {
+    describe('getResults()', () => {
         it('passes when asking for finished results', async () => {
             let dispatcher = new Dispatcher();
             dispatcher.startProcessing();
@@ -160,7 +160,7 @@ describe('Command', function() {
         });
     });
 
-    describe('isFinished()', function() {
+    describe('isFinished()', () => {
         it('passes when the command is finished', async () => {
             let dispatcher = new Dispatcher();
             dispatcher.startProcessing();

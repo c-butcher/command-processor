@@ -21,7 +21,7 @@ class Command {
             throw new CommandError("Command must implement the execute() method.");
         }
 
-        if (typeof options !== 'object') {
+        if (!options || typeof options !== 'object') {
             throw new CommandError("Argument 'options' must be an object.");
         }
 

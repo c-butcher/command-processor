@@ -13,6 +13,13 @@ describe('Dispatcher', function() {
             let dispatcher = new Dispatcher();
             chai.assert.isFalse(dispatcher.isStateful());
         });
+
+        it('throws error without options', async () => {
+            chai.expect(() => {
+                let dispatcher = new Dispatcher(null);
+                chai.assert.isFalse(dispatcher.isStateful());
+            }).to.throw();
+        });
     });
 
     describe('isProcessing()', function() {
