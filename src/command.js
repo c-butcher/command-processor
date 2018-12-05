@@ -1,4 +1,6 @@
 const CommandError = require('formatted-error');
+const CommandEvent = require('./events/command-event');
+const CommandEvents = require('./command-events');
 const Dispatcher = require('./dispatcher');
 
 /**
@@ -139,7 +141,10 @@ class Command {
         this._finished = true;
         this._results = results;
 
-        return this.getResults();
+        let event = new CommandEvent(this);
+        CommandEvents.emit(CommandEvents.Finished, event);
+
+        return event.getResults();
     }
 
     /**

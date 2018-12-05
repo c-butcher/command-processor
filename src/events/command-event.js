@@ -1,12 +1,10 @@
-class CommandEvent extends Event {
+class CommandEvent {
     /**
      * Provides data access to a command.
      *
      * @param {Command} command
      */
     constructor(command) {
-        super();
-
         this._command = command;
     }
 

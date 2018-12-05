@@ -1,4 +1,4 @@
-class CommandInputEvent extends Event {
+class CommandInputEvent {
     /**
      * Provides data access to a command input and the assigned value.
      *
@@ -6,8 +6,6 @@ class CommandInputEvent extends Event {
      * @param {*} value
      */
     constructor(input, value) {
-        super();
-
         this._input = input;
         this._value = value;
     }
