@@ -14,65 +14,59 @@ You can see an example of a command below. Don't be worried about the size of th
 over 80% of the code is for describing the command to others, and in a few minutes you'll
 completely understand every part about how the command object works.
 
+1. Inputs
+2. Options
+3. Outputs
+
+
 ```javascript
 const Command = require('command-processor').Command;
 
-class SendEmail extends Command {
+class FindByCommand extends Command {
     static describe() {
         return {
-            key: 'send_email',
-            name: 'Send an Email',
-            description: 'Send a single email',
+            key: 'find_by',
+            name: 'Find By',
+            description: 'Find a database model by specific keywords.',
             inputs: {
-                email: {
-                    type: 'email',
+                keywords: {
+                    type: 'object',
                     required: true,
-                    description: "The email address where the email is sent."
+                    description: "The search keywords."
                 },
-                subject: {
+                scheme: {
                     type: 'string',
                     required: true,
-                    description: "The subject of the email.",
-                },
-                content: {
-                    type: 'string',
-                    required: true,
-                    description: "The content of the email.",
-                },
-                headers: {
-                    type: 'array',
-                    required: false,
-                    description: "The headers to send with the email."
+                    description: "The search keywords."
                 }
             },
             outputs: {
-                success: {
-                    type: 'boolean',
-                    description: 'Tells if the email was successfully sent off.'
+                models: {
+                    type: 'array',
+                    description: 'The database model(s) that were found.'
                 }
             },
         }
     }
     
-    execute(mailer) {
-        if (!(mailer instanceof EmailDispatcher)) {
+    execute(app) {
+        if (!(app instanceof AppDispatcher)) {
             return null;
         }
         
-        let success = mailer.send(
-            this.inputs.get('email'),
-            this.inputs.get('subject'),
-            this.inputs.get('content'),
-            this.inputs.get('headers')
-        );
+        let keywords = this.inputs.get('keywords');
+        let scheme   = this.inputs.get('scheme');
+        
+        let models = app.find(scheme)
+                        .by(keywords);
         
         return {
-            success: success
-        }
+            models
+        };
     }
 }
 
-module.exports = SendEmail;
+module.exports = FindByCommand;
 ```
 
 ### Why Describe?
