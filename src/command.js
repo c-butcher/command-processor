@@ -68,6 +68,9 @@ class Command {
     /**
      * Process this command and return the resulting output.
      *
+     * When the dispatcher has stopped processing, or this command has already been processed,
+     * then this method will return the cached results.
+     *
      * @param {Dispatcher} dispatcher
      *
      * @returns {Promise|object|null}
@@ -91,6 +94,8 @@ class Command {
      * @param {Dispatcher} dispatcher
      *
      * @returns {Dispatcher}
+     *
+     * @private
      */
     async _prepare(dispatcher) {
         for (let i = 0; i < this._inputs.length; i++) {
@@ -102,6 +107,14 @@ class Command {
         return dispatcher;
     }
 
+    /**
+     * Sets our input from the results we received from our input command.
+     *
+     * @param input
+     * @param results
+     *
+     * @private
+     */
     _setInputFromResult(input, results) {
         if (!results || typeof results[input.from] === "undefined") {
             throw new CommandError("Command '{command}' does not have '{name}' output.", {
@@ -119,6 +132,8 @@ class Command {
      * @param {object} results
      *
      * @returns {object}
+     *
+     * @private
      */
     _finish(results) {
         this._finished = true;
