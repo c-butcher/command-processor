@@ -2,7 +2,7 @@ const EventEmitter = require('events').EventEmitter;
 
 let instance = null;
 
-class CommandEvents extends EventEmitter {
+class Events extends EventEmitter {
     constructor() {
         super();
 
@@ -11,16 +11,19 @@ class CommandEvents extends EventEmitter {
 
         this.COMMAND_STARTED  = 'command.started';
         this.COMMAND_FINISHED = 'command.finished';
+
+        this.PROCESS_STARTED = 'process.started';
+        this.PROCESS_FINISHED = 'process.finished';
     }
 
     /**
      * Returns an event manager for commands.
      *
-     * @returns {CommandEvents}
+     * @returns {Events}
      */
     static getInstance() {
         if (!instance) {
-            instance = new CommandEvents();
+            instance = new Events();
         }
 
         return instance;
@@ -29,6 +32,6 @@ class CommandEvents extends EventEmitter {
 
 
 /**
- * @type {CommandEvents}
+ * @type {Events}
  */
-module.exports = CommandEvents.getInstance();
+module.exports = Events.getInstance();

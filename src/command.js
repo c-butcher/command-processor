@@ -1,8 +1,8 @@
 const CommandError = require('formatted-error');
 const CommandEvent = require('./events/command-event');
-const CommandEvents = require('./command-events');
 const CommandInput = require('./command-input');
 const Dispatcher = require('./dispatcher');
+const Events = require('./events');
 
 /**
  * Command Class
@@ -93,14 +93,20 @@ class Command {
             return this._results;
         }
 
-        let event = new CommandEvent(this);
-        CommandEvents.emit(CommandEvents.COMMAND_STARTED, event);
+        let event = new CommandEvent(this, dispatcher);
+        Events.emit(Events.COMMAND_STARTED, event);
 
         return Promise
             .resolve(dispatcher)
             .then(dispatcher => this._loadInputs(dispatcher))
             .then(dispatcher => this.execute(dispatcher))
-            .then(results    => this._finish(results));
+            .then(results    => this._setResults(results))
+            .then(results    => {
+                let event = new CommandEvent(this, dispatcher);
+                Events.emit(Events.COMMAND_FINISHED, event);
+
+                return results;
+            });
     }
 
     /**
@@ -163,14 +169,11 @@ class Command {
      *
      * @private
      */
-    _finish(results) {
+    _setResults(results) {
         this._finished = true;
         this._results = results;
 
-        let event = new CommandEvent(this);
-        CommandEvents.emit(CommandEvents.COMMAND_FINISHED, event);
-
-        return event.getResults();
+        return results;
     }
 
     /**

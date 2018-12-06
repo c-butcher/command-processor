@@ -1,7 +1,7 @@
-const CommandEvents = require('./command-events');
 const CommandInputError = require('formatted-error');
 const CommandInputEvent = require('./events/command-input-event');
 const CommandInputValidationEvent = require('./events/command-input-validation-event');
+const Events = require('./events');
 
 class CommandInput {
     /**
@@ -136,7 +136,7 @@ class CommandInput {
         }
 
         let event = new CommandInputEvent(this, this._value);
-        CommandEvents.emit(CommandEvents.INPUT_SANITIZED, event);
+        Events.emit(Events.INPUT_SANITIZED, event);
 
         this._value = event.getValue();
 
@@ -155,7 +155,7 @@ class CommandInput {
         }
 
         let event = new CommandInputValidationEvent(this, this._value, errors);
-        CommandEvents.emit(CommandEvents.INPUT_VALIDATED, event);
+        Events.emit(Events.INPUT_VALIDATED, event);
 
         return event.getErrors();
     }
