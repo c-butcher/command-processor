@@ -1,4 +1,4 @@
-const Command = require('../../command');
+const Command = require('../../../src/command');
 
 class SetStatefulCommand extends Command {
     /**

@@ -6,8 +6,8 @@ const Dispatcher = require('../src/dispatcher');
 require('../src/subscribers/sanitation');
 require('../src/subscribers/validation');
 
-const Math = require('../src/commands/math');
-const Primitives = require('../src/commands/primitives');
+const Math = require('./commands/math');
+const Primitives = require('./commands/primitives');
 
 describe('Command', function() {
 

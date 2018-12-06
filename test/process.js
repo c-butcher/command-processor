@@ -6,9 +6,8 @@ const CommandInput = require('../src/command-input');
 require('../src/subscribers/sanitation');
 require('../src/subscribers/validation');
 
-const Math = require('../src/commands/math');
-const Primitives = require('../src/commands/primitives');
-const Dispatch = require('../src/commands/dispatcher');
+const Math = require('./commands/math');
+const Primitives = require('./commands/primitives');
 
 describe('Process', function() {
 
