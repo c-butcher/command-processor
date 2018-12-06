@@ -8,6 +8,8 @@
 ```bash
 > npm install --save command-processor
 ```
+### How the System Works
+Our system has commands, which we can group together into a process. Each command
 
 ### Building a Command
 You can see an example of a command below. Don't be worried about the size of the command,
@@ -80,8 +82,22 @@ module.exports = FindByCommand;
 You're probably wondering why our commands have so much code describing our commands. It's because
 our commands are designed to be used by end-users.
 
-### Default Values
+### Validation and Sanitation
+The command processor does not have any validation or sanitation built-in directly, but we do have
+events for handling both of these issues. The easiest solution would be to install the [data-sanitizers](https://github.com/c-butcher/data-sanitizers)
+and/or [data-validators](https://github.com/c-butcher/data-validators) packages.
 
+```bash
+> npm install --save data-sanitizers
+> npm install --save data-validators
+```
+
+Our command processor will detect the packages above and start using them immediately without having
+to do any configuration.
+
+
+There will be times when our sanitation/validation packages might not be right for you, in which case
+you can [create your own custom validators and sanitizers](docs/creating-validators-and-sanitizers.md).
 
 ### Input and Output Values
 
