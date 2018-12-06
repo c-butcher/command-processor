@@ -3,7 +3,7 @@ const CommandEvent = require('./src/events/command-event');
 const Dispatcher = require('./src/dispatcher');
 const Events = require('./src/events');
 const Input = require('./src/input');
-const InputEvent = require('./src/events/input-event');
+const InputSanitationEvent = require('./src/events/input-sanitation-event');
 const InputValidationEvent = require('./src/events/input-validation-event');
 const Process = require('./src/process');
 
@@ -21,7 +21,7 @@ module.exports = {
     Dispatcher,
     Events,
     Input,
-    InputEvent,
+    InputSanitationEvent,
     InputValidationEvent,
     Process,
 };

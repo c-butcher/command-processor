@@ -1,6 +1,6 @@
 class InputValidationEvent {
     /**
-     * Provides data access to an input and the assigned value.
+     * Provides access to the type and value of an input, and along with a list of validation errors.
      *
      * @param {Input} input
      * @param {object} options

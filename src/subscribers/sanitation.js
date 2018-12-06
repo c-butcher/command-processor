@@ -2,16 +2,16 @@ const Sanitizer = require('data-sanitizers').Sanitizer;
 const Events = require('../events');
 
 /**
- * @var {InputEvent} event
+ * @var {InputSanitationEvent} event
  */
-Events.on(Events.INPUT_SANITIZED, /** @param {InputEvent} event */ (event) => {
-    let input = event.getInput();
-    let type  = input.getType();
-    let value = input.getValue();
+Events.on(Events.INPUT_SANITIZED, /** @param {InputSanitationEvent} event */ (event) => {
+    let options = event.getOptions();
+    let type    = event.getType();
+    let value   = event.getValue();
 
     if (Sanitizer.has(type)) {
-        value = Sanitizer.clean(value, type);
+        value = Sanitizer.clean(value, type, options);
     }
 
-    input.setValue(value);
+    event.setSanitized(value);
 });

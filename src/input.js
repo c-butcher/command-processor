@@ -1,6 +1,6 @@
 const Events = require('./events');
 const InputError = require('formatted-error');
-const InputEvent = require('./events/input-event');
+const InputSanitationEvent = require('./events/input-sanitation-event');
 const InputValidationEvent = require('./events/input-validation-event');
 
 class Input {
@@ -157,10 +157,10 @@ class Input {
             this._value = this._sanitize(this._value);
         }
 
-        let event = new InputEvent(this, this._value);
+        let event = new InputSanitationEvent(this._type, this._value);
         Events.emit(Events.INPUT_SANITIZED, event);
 
-        this._value = event.getValue();
+        this._value = event.getSanitized();
 
         return this;
     }
