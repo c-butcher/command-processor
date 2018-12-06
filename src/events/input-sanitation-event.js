@@ -10,7 +10,7 @@ class InputSanitationEvent {
         this._type = type;
         this._value = value;
         this._options = options;
-        this._sanitized = null;
+        this._sanitized = undefined;
     }
 
     /**

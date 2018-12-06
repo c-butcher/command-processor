@@ -10,6 +10,7 @@ const Input = require('./input');
  * @function execute
  */
 class Command {
+
     /**
      * @param {Input[]} inputs
      * @param {object} options
@@ -31,16 +32,14 @@ class Command {
             throw new CommandError("Argument 'inputs' must be an array.");
         }
 
-        /** @type {Map<string, Input>} */
+        options = Object.assign(this.constructor.defaults(), options);
+
         this.inputs = new Map();
-        this.options = new Map(Object.entries(
-            Object.assign(this.constructor.defaults(), options)
-        ));
+        this.options = new Map(Object.entries(options));
 
         this._finished = false;
-        this._results = null;
-
-        inputs.forEach((input) => this.inputs.set(input.getName(), input));
+        this._results  = null;
+        this._inputs = inputs;
     }
 
     /**
@@ -86,9 +85,9 @@ class Command {
      *
      * @param {Dispatcher} dispatcher
      *
-     * @returns {Promise|object|null}
+     * @returns {Promise<object>}
      */
-    process(dispatcher) {
+    async process(dispatcher) {
         if (!dispatcher.isProcessing() || this.isFinished()) {
             return this._results;
         }
@@ -96,84 +95,77 @@ class Command {
         let event = new CommandEvent(this, dispatcher);
         Events.emit(Events.COMMAND_STARTED, event);
 
-        return Promise
-            .resolve(dispatcher)
-            .then(dispatcher => this._loadInputs(dispatcher))
-            .then(dispatcher => this.execute(dispatcher))
-            .then(results    => this._setResults(results))
-            .then(results    => {
-                let event = new CommandEvent(this, dispatcher);
-                Events.emit(Events.COMMAND_FINISHED, event);
+        for (let input of this._inputs) {
+            await this.prepare(input, dispatcher);
+        }
 
-                return results;
-            });
+        await this._execute(dispatcher);
+
+        event = new CommandEvent(this, dispatcher);
+        Events.emit(Events.COMMAND_FINISHED, event);
+
+        return event.getResults();
     }
 
     /**
-     * Loads all of the input values by executing all the input commands.
-     *
-     * @param {Dispatcher} dispatcher
-     *
-     * @returns {Dispatcher}
-     *
-     * @private
-     */
-    _loadInputs(dispatcher) {
-        this.inputs.forEach(input => this._loadInput(input, dispatcher));
-
-        return dispatcher;
-    }
-
-    /**
-     * Load a single input value.
+     * Executes the input command and then sets the inputs value from the results.
      *
      * @param {Input} input
      * @param {Dispatcher} dispatcher
      *
-     * @returns {Promise<*>}
+     * @returns {Promise<object>}
      *
      * @private
      */
-    async _loadInput(input, dispatcher) {
-        let lookup  = input.getLookup();
-        let command = input.getCommand();
-        let results = await command.process(dispatcher);
+    prepare(input, dispatcher) {
+        return new Promise(async (resolve, reject) => {
+            let lookup  = input.getLookup();
+            let command = input.getCommand();
 
-        if (!results || typeof results[lookup] === "undefined") {
-            throw new CommandError("Command '{command}' did not have the '{output}' output.", {
-                command: command.constructor.describe().name,
-                results: results,
-                output: lookup,
-            });
-        }
+            let results = await command.process(dispatcher);
+            if (!results || typeof results[lookup] === "undefined") {
 
-        input.setValue(results[lookup]);
+            }
 
-        if (input.shouldSanitize()) {
-            input.sanitize();
-        }
+            input.setValue(results[lookup]);
 
-        if (input.shouldValidate()) {
-            input.validate();
-        }
+            if (input.shouldSanitize()) {
+                input.sanitize();
+            }
 
-        return dispatcher;
+            if (input.shouldValidate()) {
+                input.validate();
+            }
+
+            this.inputs.set(input.getName(), input.getValue());
+
+            resolve(dispatcher);
+        });
     }
 
     /**
-     * Finish executing this command by setting the results.
+     * Executes the command.
      *
-     * @param {object} results
+     * @param dispatcher
      *
-     * @returns {object}
+     * @returns {Promise<object>}
      *
      * @private
      */
-    _setResults(results) {
-        this._finished = true;
-        this._results = results;
+    _execute(dispatcher) {
+        return new Promise((resolve, reject) => {
+            let results = this.execute(dispatcher);
 
-        return results;
+            this._finished = true;
+            this._results = results;
+
+            let event = new CommandEvent(this, dispatcher);
+            Events.emit(Events.COMMAND_FINISHED, event);
+
+            this._results = event.getResults();
+
+            return resolve(this._results);
+        });
     }
 
     /**
@@ -185,7 +177,7 @@ class Command {
      * @returns {*}
      */
     getResult(name, defaultValue = null) {
-        if (!this._results || !this._results[name]) {
+        if (!this._results || typeof this._results[name] === "undefined") {
             return defaultValue;
         }
 

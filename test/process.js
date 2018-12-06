@@ -3,9 +3,6 @@ const Process = require('../src/process');
 const Dispatcher = require('../src/dispatcher');
 const Input = require('../src/input');
 
-require('../src/subscribers/sanitation');
-require('../src/subscribers/validation');
-
 const Math = require('./commands/math');
 const Primitives = require('./commands/primitives');
 

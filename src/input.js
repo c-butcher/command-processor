@@ -157,10 +157,17 @@ class Input {
             this._value = this._sanitize(this._value);
         }
 
-        let event = new InputSanitationEvent(this._type, this._value);
+        let options = {};
+        if (typeof this._sanitize === 'object') {
+            options = this._sanitize;
+        }
+
+        let event = new InputSanitationEvent(this._type, this._value, options);
         Events.emit(Events.INPUT_SANITIZED, event);
 
-        this._value = event.getSanitized();
+        if (typeof event.getSanitized() !== "undefined") {
+            this._value = event.getSanitized();
+        }
 
         return this;
     }
