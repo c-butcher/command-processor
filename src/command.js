@@ -139,7 +139,7 @@ class Command {
         let command = input.getCommand();
         let results = await command.process(dispatcher);
 
-        if (!results || !results[lookup]) {
+        if (!results || typeof results[lookup] === "undefined") {
             throw new CommandError("Command '{command}' did not have the '{output}' output.", {
                 command: command.constructor.describe().name,
                 results: results,
@@ -189,12 +189,7 @@ class Command {
             return defaultValue;
         }
 
-        let result = this._results[name];
-        if (typeof result === 'object') {
-            result = Object.assign({}, result);
-        }
-
-        return result;
+        return this._results[name];
     }
 
     /**
