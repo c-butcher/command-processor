@@ -1,6 +1,8 @@
 const Command = require('./command');
 const Dispatcher = require('./dispatcher');
 const ProcessError = require('formatted-error');
+const ProcessEvent = require('./events/process-event');
+const Events = require('./events');
 
 class Process {
     /**
@@ -23,11 +25,11 @@ class Process {
             throw new ProcessError("Argument 'options' must be an object.")
         }
 
+        this._options    = Object.assign(this.constructor.defaults(), options);
         this._dispatcher = dispatcher;
-        this._command = command;
-        this._options = Object.assign(this.constructor.defaults(), options);
-        this._results = [];
-        this._finished = false;
+        this._command    = command;
+        this._results    = null;
+        this._finished   = false;
     }
 
     /**
@@ -57,54 +59,27 @@ class Process {
      *
      * @returns {Promise<object>}
      */
-    run() {
-        // If the process has been run already, then return the results.
-        if (this.isFinished()) {
-            return this._results;
-        }
-
+    async run() {
         // Start our command dispatcher
         this._dispatcher.startProcessing();
 
-        // Execute the command
-        return Promise
-            .resolve(this._dispatcher)
-            .then(dispatcher => this._command.process(dispatcher))
-            .then(result => this._setResult(result))
-            .then(() => this._shutdown())
-            .then(() => this.getResults());
-    }
+        let event = new ProcessEvent(this);
+        Events.emit(Events.PROCESS_STARTED, event);
 
-    /**
-     * Attempt to shutdown the process.
-     *
-     * @returns {boolean}
-     */
-    _shutdown() {
+        this._results = await this._command.process(this._dispatcher);
+
         // Wash the dispatcher if necessary
         if (!this._dispatcher.isStateful()) {
             this._dispatcher.reset();
         }
 
-        // Stop the command dispatcher
+        // Stop the command dispatcher and mark as finished.
         this._dispatcher.stopProcessing();
         this._finished = true;
 
-        return true;
-    }
+        Events.emit(Events.PROCESS_FINISHED, event);
 
-    /**
-     * Sets the returned results for this process.
-     *
-     * @param {object} result
-     *
-     * @returns {Process}
-     *
-     * @private
-     */
-    _setResult(result) {
-        this._results = result;
-        return this;
+        return this._results;
     }
 
     /**
@@ -117,7 +92,7 @@ class Process {
             return null;
         }
 
-        return Object.assign({}, this._results);
+        return this._results;
     }
 
     /**

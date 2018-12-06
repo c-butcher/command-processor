@@ -96,12 +96,11 @@ class Command {
         Events.emit(Events.COMMAND_STARTED, event);
 
         for (let input of this._inputs) {
-            await this.prepare(input, dispatcher);
+            await this._prepare(input, dispatcher);
         }
 
         await this._execute(dispatcher);
 
-        event = new CommandEvent(this, dispatcher);
         Events.emit(Events.COMMAND_FINISHED, event);
 
         return event.getResults();
@@ -117,7 +116,7 @@ class Command {
      *
      * @private
      */
-    prepare(input, dispatcher) {
+    _prepare(input, dispatcher) {
         return new Promise(async (resolve, reject) => {
             let lookup  = input.getLookup();
             let command = input.getCommand();

@@ -156,8 +156,7 @@ describe('Process', function() {
             let command = new Math.AddCommand([]);
             let process = new Process(dispatcher, command);
 
-            assert.isObject(process.getResults());
-            assert.isEmpty(process.getResults());
+            assert.isNull(process.getResults());
         });
     });
 });
