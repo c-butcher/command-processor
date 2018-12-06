@@ -14,6 +14,9 @@ class CommandInput {
         if (typeof options.name !== 'string') {
             throw new CommandInputError("Argument 'name' must be a string.");
         }
+        if (typeof options.type !== 'string') {
+            throw new CommandInputError("Argument 'type' must be a string.");
+        }
 
         if (typeof options.lookup !== 'string') {
             throw new CommandInputError("Argument 'lookup' must be a string.");
@@ -26,6 +29,7 @@ class CommandInput {
         options = Object.assign(this.constructor.defaults(), options);
 
         this._name     = options.name;
+        this._type     = options.type;
         this._lookup   = options.lookup;
         this._required = options.required;
         this._sanitize = options.sanitize;
@@ -42,6 +46,7 @@ class CommandInput {
     static defaults() {
         return {
             name: null,
+            type: 'string',
             lookup: null,
             required: false,
             sanitize: true,
@@ -57,6 +62,15 @@ class CommandInput {
      */
     getName() {
         return this._name;
+    }
+
+    /**
+     * Returns the type of input this is.
+     *
+     * @returns {*}
+     */
+    getType() {
+        return this._type;
     }
 
     /**

@@ -65,8 +65,8 @@ describe('Command', function() {
             };
 
             let inputs = [
-                new CommandInput(commands.start, {name: 'start', lookup: 'value'}),
-                new CommandInput(commands.addition, {name: 'addition', lookup: 'value'})
+                new CommandInput(commands.start, {name: 'start', lookup: 'value', sanitize: true}),
+                new CommandInput(commands.addition, {name: 'addition', lookup: 'value', sanitize: true})
             ];
 
             let command = new Math.AddCommand(inputs);
