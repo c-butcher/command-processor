@@ -7,12 +7,15 @@ const InputSanitationEvent = require('./src/events/input-sanitation-event');
 const InputValidationEvent = require('./src/events/input-validation-event');
 const Process = require('./src/process');
 
-if (require.resolve('data-sanitizers')) {
-    require('./src/subscribers/sanitation');
-}
+let softDependencies = {
+    "data-sanitizers": "./src/subscribers/sanitation",
+    "data-validators": "./src/subscribers/validation",
+};
 
-if (require.resolve('data-validators')) {
-    require('./src/subscribers/validation');
+for (let module in softDependencies) {
+    if (require.resolve(module)) {
+        require(softDependencies[module]);
+    }
 }
 
 module.exports = {
