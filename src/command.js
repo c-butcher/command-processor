@@ -123,7 +123,12 @@ class Command {
 
             let results = await command.process(dispatcher);
             if (!results || typeof results[lookup] === "undefined") {
+                let error = new CommandError("Command '{command}' did not have '{lookup}' output.", {
+                    lookup,
+                    command,
+                });
 
+                return reject(error);
             }
 
             input.setValue(results[lookup]);
