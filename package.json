@@ -24,9 +24,12 @@
   },
   "homepage": "https://github.com/c-butcher/command-processor#readme",
   "dependencies": {
+    "formatted-error": "^1.0.0"
+  },
+  "devDependencies": {
     "chai": "^4.2.0",
     "data-sanitizers": "^1.0.1",
-    "formatted-error": "^1.0.0",
+    "data-validators": "^1.0.3",
     "mocha": "^5.2.0"
   }
 }
