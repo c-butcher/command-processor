@@ -63,6 +63,11 @@ class CommandInput {
         return this._name;
     }
 
+    /**
+     * Returns the description of this input.
+     *
+     * @returns {string}
+     */
     getDescription() {
         return this._description;
     }
