@@ -169,7 +169,7 @@ class Input {
             this._value = event.getSanitized();
         }
 
-        return this;
+        return this._value;
     }
 
     /**
