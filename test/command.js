@@ -44,8 +44,18 @@ describe('Command', function() {
             };
 
             let command = new Math.AddCommand([
-                new CommandInput(commands.start, {name: 'start', lookup: 'value'}),
-                new CommandInput(commands.addition, {name: 'addition', lookup: 'value'})
+                new CommandInput(commands.start, {
+                    type: 'number',
+                    lookup: 'value',
+                    required: true,
+                    sanitize: true,
+                }),
+                new CommandInput(commands.addition, {
+                    type: 'number',
+                    lookup: 'value',
+                    required: true,
+                    sanitize: true,
+                })
             ]);
 
             dispatcher.startProcessing();
@@ -65,8 +75,18 @@ describe('Command', function() {
             };
 
             let inputs = [
-                new CommandInput(commands.start, {name: 'start', lookup: 'value', sanitize: true}),
-                new CommandInput(commands.addition, {name: 'addition', lookup: 'value', sanitize: true})
+                new CommandInput(commands.start, {
+                    type: 'number',
+                    lookup: 'value',
+                    required: true,
+                    sanitize: true,
+                }),
+                new CommandInput(commands.addition, {
+                    type: 'number',
+                    lookup: 'value',
+                    required: true,
+                    sanitize: true,
+                })
             ];
 
             let command = new Math.AddCommand(inputs);
@@ -89,8 +109,18 @@ describe('Command', function() {
             };
 
             let inputs = [
-                new CommandInput(commands.start, {name: 'start', lookup: 'value'}),
-                new CommandInput(commands.addition, {name: 'addition', lookup: 'value'})
+                new CommandInput(commands.start, {
+                    type: 'number',
+                    lookup: 'value',
+                    required: true,
+                    sanitize: true,
+                }),
+                new CommandInput(commands.addition, {
+                    type: 'number',
+                    lookup: 'value',
+                    required: true,
+                    sanitize: true,
+                })
             ];
 
             let command = new Math.AddCommand(inputs);
@@ -124,8 +154,18 @@ describe('Command', function() {
             };
 
             let inputs = [
-                new CommandInput(commands.start, {name: 'start', lookup: 'value'}),
-                new CommandInput(commands.addition, {name: 'addition', lookup: 'value'})
+                new CommandInput(commands.start, {
+                    type: 'number',
+                    lookup: 'value',
+                    required: true,
+                    sanitize: true,
+                }),
+                new CommandInput(commands.addition, {
+                    type: 'number',
+                    lookup: 'value',
+                    required: true,
+                    sanitize: true,
+                })
             ];
 
             let command = new Math.AddCommand(inputs);
@@ -149,8 +189,18 @@ describe('Command', function() {
             };
 
             let inputs = [
-                new CommandInput(commands.start, {name: 'start', lookup: 'value'}),
-                new CommandInput(commands.addition, {name: 'addition', lookup: 'value'})
+                new CommandInput(commands.start, {
+                    type: 'number',
+                    lookup: 'value',
+                    required: true,
+                    sanitize: true,
+                }),
+                new CommandInput(commands.addition, {
+                    type: 'number',
+                    lookup: 'value',
+                    required: true,
+                    sanitize: true,
+                })
             ];
 
             let command  = new Math.AddCommand(inputs);

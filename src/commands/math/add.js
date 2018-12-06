@@ -14,15 +14,20 @@ class AddCommand extends Command {
             inputs: {
                 start: {
                     type: 'number',
+                    required: true,
+                    sanitize: true,
                     description: "The number that we start at."
                 },
                 addition: {
                     type: 'number',
+                    required: true,
+                    sanitize: true,
                     description: "The number that we add to our starting number.",
                 }
             },
             outputs: {
                 value: {
+                    name: 'Value',
                     type: 'number',
                     description: 'The final value.'
                 }

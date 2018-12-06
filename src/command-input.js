@@ -11,9 +11,6 @@ class CommandInput {
      * @param {object} options
      */
     constructor(command, options = {}) {
-        if (typeof options.name !== 'string') {
-            throw new CommandInputError("Argument 'name' must be a string.");
-        }
         if (typeof options.type !== 'string') {
             throw new CommandInputError("Argument 'type' must be a string.");
         }
@@ -28,14 +25,15 @@ class CommandInput {
 
         options = Object.assign(this.constructor.defaults(), options);
 
-        this._name     = options.name;
-        this._type     = options.type;
-        this._lookup   = options.lookup;
-        this._required = options.required;
-        this._sanitize = options.sanitize;
-        this._validate = options.validate;
-        this._command  = command;
-        this._value    = undefined;
+        this._name        = options.name;
+        this._description = options.description;
+        this._type        = options.type;
+        this._lookup      = options.lookup;
+        this._required    = options.required;
+        this._sanitize    = options.sanitize;
+        this._validate    = options.validate;
+        this._command     = command;
+        this._value       = undefined;
     }
 
     /**
@@ -46,6 +44,7 @@ class CommandInput {
     static defaults() {
         return {
             name: null,
+            description: null,
             type: 'string',
             lookup: null,
             required: false,
@@ -62,6 +61,10 @@ class CommandInput {
      */
     getName() {
         return this._name;
+    }
+
+    getDescription() {
+        return this._description;
     }
 
     /**
