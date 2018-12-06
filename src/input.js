@@ -1,9 +1,9 @@
-const CommandInputError = require('formatted-error');
-const CommandInputEvent = require('./events/command-input-event');
-const CommandInputValidationEvent = require('./events/command-input-validation-event');
 const Events = require('./events');
+const InputError = require('formatted-error');
+const InputEvent = require('./events/input-event');
+const InputValidationEvent = require('./events/input-validation-event');
 
-class CommandInput {
+class Input {
     /**
      * Creates a link between one commands input and another commands output.
      *
@@ -12,15 +12,15 @@ class CommandInput {
      */
     constructor(command, options = {}) {
         if (typeof options.type !== 'string') {
-            throw new CommandInputError("Argument 'type' must be a string.");
+            throw new InputError("Argument 'type' must be a string.");
         }
 
         if (typeof options.lookup !== 'string') {
-            throw new CommandInputError("Argument 'lookup' must be a string.");
+            throw new InputError("Argument 'lookup' must be a string.");
         }
 
         if (typeof command !== 'object' || typeof command.execute !== 'function') {
-            throw new CommandInputError("Argument 'command' must be instance of Command.");
+            throw new InputError("Argument 'command' must be instance of Command.");
         }
 
         options = Object.assign(this.constructor.defaults(), options);
@@ -104,7 +104,7 @@ class CommandInput {
      *
      * @param {*} value
      *
-     * @returns {CommandInput}
+     * @returns {Input}
      */
     setValue(value) {
         this._value = value;
@@ -150,14 +150,14 @@ class CommandInput {
     /**
      * Tells us whether to sanitize our input.
      *
-     * @returns {CommandInput}
+     * @returns {Input}
      */
     sanitize() {
         if (typeof this._sanitize === 'function') {
             this._value = this._sanitize(this._value);
         }
 
-        let event = new CommandInputEvent(this, this._value);
+        let event = new InputEvent(this, this._value);
         Events.emit(Events.INPUT_SANITIZED, event);
 
         this._value = event.getValue();
@@ -176,11 +176,11 @@ class CommandInput {
             errors = this._validate(this._value);
         }
 
-        let event = new CommandInputValidationEvent(this, this._value, errors);
+        let event = new InputValidationEvent(this, this._value, errors);
         Events.emit(Events.INPUT_VALIDATED, event);
 
         return event.getErrors();
     }
 }
 
-module.exports = CommandInput;
+module.exports = Input;

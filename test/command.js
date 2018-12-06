@@ -1,7 +1,7 @@
 const { assert, expect } = require('chai');
 const Command = require('../src/command');
-const CommandInput = require('../src/command-input');
 const Dispatcher = require('../src/dispatcher');
+const Input = require('../src/input');
 
 require('../src/subscribers/sanitation');
 require('../src/subscribers/validation');
@@ -47,14 +47,14 @@ describe('Command', function() {
             };
 
             let command = new Math.AddCommand([
-                new CommandInput(commands.start, {
+                new Input(commands.start, {
                     name: 'start',
                     type: 'number',
                     lookup: 'value',
                     required: true,
                     sanitize: true,
                 }),
-                new CommandInput(commands.addition, {
+                new Input(commands.addition, {
                     name: 'addition',
                     type: 'number',
                     lookup: 'value',
@@ -80,14 +80,14 @@ describe('Command', function() {
             };
 
             let inputs = [
-                new CommandInput(commands.start, {
+                new Input(commands.start, {
                     name: 'start',
                     type: 'number',
                     lookup: 'value',
                     required: true,
                     sanitize: true,
                 }),
-                new CommandInput(commands.addition, {
+                new Input(commands.addition, {
                     name: 'addition',
                     type: 'number',
                     lookup: 'value',
@@ -116,14 +116,14 @@ describe('Command', function() {
             };
 
             let inputs = [
-                new CommandInput(commands.start, {
+                new Input(commands.start, {
                     name: 'start',
                     type: 'number',
                     lookup: 'value',
                     required: true,
                     sanitize: true,
                 }),
-                new CommandInput(commands.addition, {
+                new Input(commands.addition, {
                     name: 'addition',
                     type: 'number',
                     lookup: 'value',
@@ -163,14 +163,14 @@ describe('Command', function() {
             };
 
             let inputs = [
-                new CommandInput(commands.start, {
+                new Input(commands.start, {
                     name: 'start',
                     type: 'number',
                     lookup: 'value',
                     required: true,
                     sanitize: true,
                 }),
-                new CommandInput(commands.addition, {
+                new Input(commands.addition, {
                     name: 'addition',
                     type: 'number',
                     lookup: 'value',
@@ -200,14 +200,14 @@ describe('Command', function() {
             };
 
             let inputs = [
-                new CommandInput(commands.start, {
+                new Input(commands.start, {
                     name: 'start',
                     type: 'number',
                     lookup: 'value',
                     required: true,
                     sanitize: true,
                 }),
-                new CommandInput(commands.addition, {
+                new Input(commands.addition, {
                     name: 'addition',
                     type: 'number',
                     lookup: 'value',

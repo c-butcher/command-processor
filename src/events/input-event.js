@@ -1,8 +1,8 @@
-class CommandInputEvent {
+class InputEvent {
     /**
-     * Provides data access to a command input and the assigned value.
+     * Provides data access to an input and the assigned value.
      *
-     * @param {CommandInput} input
+     * @param {Input} input
      * @param {*} value
      */
     constructor(input, value) {
@@ -13,9 +13,9 @@ class CommandInputEvent {
     /**
      * Returns the command input.
      *
-     * @returns {CommandInput}
+     * @returns {Input}
      */
-    getCommandInput() {
+    getInput() {
         return this._input;
     }
 
@@ -47,4 +47,4 @@ class CommandInputEvent {
     }
 }
 
-module.exports = CommandInputEvent;
+module.exports = InputEvent;

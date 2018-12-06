@@ -1,8 +1,8 @@
 const CommandError = require('formatted-error');
 const CommandEvent = require('./events/command-event');
-const CommandInput = require('./command-input');
 const Dispatcher = require('./dispatcher');
 const Events = require('./events');
+const Input = require('./input');
 
 /**
  * Command Class
@@ -11,7 +11,7 @@ const Events = require('./events');
  */
 class Command {
     /**
-     * @param {CommandInput[]} inputs
+     * @param {Input[]} inputs
      * @param {object} options
      */
     constructor(inputs = [], options = {}) {
@@ -31,7 +31,7 @@ class Command {
             throw new CommandError("Argument 'inputs' must be an array.");
         }
 
-        /** @type {Map<string, CommandInput>} */
+        /** @type {Map<string, Input>} */
         this.inputs = new Map();
         this.options = new Map(Object.entries(
             Object.assign(this.constructor.defaults(), options)
@@ -127,7 +127,7 @@ class Command {
     /**
      * Load a single input value.
      *
-     * @param {CommandInput} input
+     * @param {Input} input
      * @param {Dispatcher} dispatcher
      *
      * @returns {Promise<*>}

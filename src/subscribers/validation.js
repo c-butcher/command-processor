@@ -2,10 +2,10 @@ const Validator = require('data-validators').Validator;
 const Events = require('../events');
 
 /**
- * @var {CommandInputEvent} event
+ * @var {InputEvent} event
  */
-Events.on(Events.INPUT_VALIDATED, /** @param {CommandInputValidationEvent} event */ (event) => {
-    let input = event.getCommandInput();
+Events.on(Events.INPUT_VALIDATED, /** @param {InputValidationEvent} event */ (event) => {
+    let input = event.getInput();
     console.log("VALIDATING", input);
 
     let type = input.getType();

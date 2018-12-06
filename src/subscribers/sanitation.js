@@ -2,10 +2,10 @@ const Sanitizer = require('data-sanitizers').Sanitizer;
 const Events = require('../events');
 
 /**
- * @var {CommandInputEvent} event
+ * @var {InputEvent} event
  */
-Events.on(Events.INPUT_SANITIZED, /** @param {CommandInputEvent} event */ (event) => {
-    let input = event.getCommandInput();
+Events.on(Events.INPUT_SANITIZED, /** @param {InputEvent} event */ (event) => {
+    let input = event.getInput();
 
     let type  = input.getType();
     let value = input.getValue();

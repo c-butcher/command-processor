@@ -1,11 +1,11 @@
 const Command = require('./src/command');
 const CommandEvent = require('./src/events/command-event');
-const CommandInput = require('./src/command-input');
-const CommandInputEvent = require('./src/events/command-input-event');
-const CommandInputValidationEvent = require('./src/events/command-input-validation-event');
 const Dispatcher = require('./src/dispatcher');
-const Process = require('./src/process');
 const Events = require('./src/events');
+const Input = require('./src/input');
+const InputEvent = require('./src/events/input-event');
+const InputValidationEvent = require('./src/events/input-validation-event');
+const Process = require('./src/process');
 
 if (require.resolve('data-sanitizers')) {
     require('./src/subscribers/sanitation');
@@ -18,10 +18,10 @@ if (require.resolve('data-validators')) {
 module.exports = {
     Command,
     CommandEvent,
-    CommandInput,
-    CommandInputEvent,
-    CommandInputValidationEvent,
     Dispatcher,
     Events,
+    Input,
+    InputEvent,
+    InputValidationEvent,
     Process,
 };

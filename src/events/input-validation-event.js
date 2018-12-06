@@ -1,8 +1,8 @@
-class CommandInputValidationEvent {
+class InputValidationEvent {
     /**
      * Provides data access to a command input and the assigned value.
      *
-     * @param {CommandInput} input
+     * @param {Input} input
      * @param {*} value
      * @param {Error[]} errors
      */
@@ -76,4 +76,4 @@ class CommandInputValidationEvent {
     }
 }
 
-module.exports = CommandInputValidationEvent;
+module.exports = InputValidationEvent;
