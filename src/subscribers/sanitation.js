@@ -6,7 +6,6 @@ const Events = require('../events');
  */
 Events.on(Events.INPUT_SANITIZED, /** @param {CommandInputEvent} event */ (event) => {
     let input = event.getCommandInput();
-    console.log("SANITISING", input);
 
     let type  = input.getType();
     let value = input.getValue();

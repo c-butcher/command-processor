@@ -3,6 +3,9 @@ const Process = require('../src/process');
 const Dispatcher = require('../src/dispatcher');
 const CommandInput = require('../src/command-input');
 
+require('../src/subscribers/sanitation');
+require('../src/subscribers/validation');
+
 const Math = require('../src/commands/math');
 const Primitives = require('../src/commands/primitives');
 const Dispatch = require('../src/commands/dispatcher');
@@ -67,12 +70,14 @@ describe('Process', function() {
 
             let inputs = [
                 new CommandInput(commands.start, {
+                    name: 'start',
                     type: 'number',
                     lookup: 'value',
                     required: true,
                     sanitize: true,
                 }),
                 new CommandInput(commands.addition, {
+                    name: 'addition',
                     type: 'number',
                     lookup: 'value',
                     required: true,
@@ -125,12 +130,14 @@ describe('Process', function() {
 
             let inputs = [
                 new CommandInput(commands.start, {
+                    name: 'start',
                     type: 'number',
                     lookup: 'value',
                     required: true,
                     sanitize: true,
                 }),
                 new CommandInput(commands.addition, {
+                    name: 'addition',
                     type: 'number',
                     lookup: 'value',
                     required: true,

@@ -3,6 +3,9 @@ const Command = require('../src/command');
 const CommandInput = require('../src/command-input');
 const Dispatcher = require('../src/dispatcher');
 
+require('../src/subscribers/sanitation');
+require('../src/subscribers/validation');
+
 const Math = require('../src/commands/math');
 const Primitives = require('../src/commands/primitives');
 
@@ -45,12 +48,14 @@ describe('Command', function() {
 
             let command = new Math.AddCommand([
                 new CommandInput(commands.start, {
+                    name: 'start',
                     type: 'number',
                     lookup: 'value',
                     required: true,
                     sanitize: true,
                 }),
                 new CommandInput(commands.addition, {
+                    name: 'addition',
                     type: 'number',
                     lookup: 'value',
                     required: true,
@@ -76,12 +81,14 @@ describe('Command', function() {
 
             let inputs = [
                 new CommandInput(commands.start, {
+                    name: 'start',
                     type: 'number',
                     lookup: 'value',
                     required: true,
                     sanitize: true,
                 }),
                 new CommandInput(commands.addition, {
+                    name: 'addition',
                     type: 'number',
                     lookup: 'value',
                     required: true,
@@ -94,7 +101,7 @@ describe('Command', function() {
 
             assert.isObject(results);
             assert.hasAllKeys(results, ['value']);
-            assert.equal(results.value, 15)
+            assert.equal(results.value, 15);
         });
     });
 
@@ -110,12 +117,14 @@ describe('Command', function() {
 
             let inputs = [
                 new CommandInput(commands.start, {
+                    name: 'start',
                     type: 'number',
                     lookup: 'value',
                     required: true,
                     sanitize: true,
                 }),
                 new CommandInput(commands.addition, {
+                    name: 'addition',
                     type: 'number',
                     lookup: 'value',
                     required: true,
@@ -130,7 +139,7 @@ describe('Command', function() {
             let after   = command.getResult('value');
 
             assert.isNull(before);
-            assert.isNotNull(after);
+            assert.isNotEmpty(after);
             assert.equal(results.value, after);
         });
 
@@ -155,12 +164,14 @@ describe('Command', function() {
 
             let inputs = [
                 new CommandInput(commands.start, {
+                    name: 'start',
                     type: 'number',
                     lookup: 'value',
                     required: true,
                     sanitize: true,
                 }),
                 new CommandInput(commands.addition, {
+                    name: 'addition',
                     type: 'number',
                     lookup: 'value',
                     required: true,
@@ -175,8 +186,8 @@ describe('Command', function() {
             let after   = command.getResults();
 
             assert.isNull(before);
+            assert.isObject(results);
             assert.isObject(after);
-            assert.equal(results.value, after.value);
         });
 
         it('fails null when command is not finished', async () => {
@@ -190,12 +201,14 @@ describe('Command', function() {
 
             let inputs = [
                 new CommandInput(commands.start, {
+                    name: 'start',
                     type: 'number',
                     lookup: 'value',
                     required: true,
                     sanitize: true,
                 }),
                 new CommandInput(commands.addition, {
+                    name: 'addition',
                     type: 'number',
                     lookup: 'value',
                     required: true,
