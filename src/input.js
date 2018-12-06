@@ -176,7 +176,12 @@ class Input {
             errors = this._validate(this._value);
         }
 
-        let event = new InputValidationEvent(this, this._value, errors);
+        let options = {};
+        if (typeof this._validate === 'object') {
+            options = this._validate;
+        }
+
+        let event = new InputValidationEvent(this, options, errors);
         Events.emit(Events.INPUT_VALIDATED, event);
 
         return event.getErrors();

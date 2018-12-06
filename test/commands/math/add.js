@@ -14,15 +14,19 @@ class AddCommand extends Command {
             inputs: {
                 start: {
                     type: 'number',
-                    required: true,
+                    description: "The number that we start at.",
                     sanitize: true,
-                    description: "The number that we start at."
+                    validate: {
+                        required: true,
+                    }
                 },
                 addition: {
                     type: 'number',
-                    required: true,
-                    sanitize: true,
                     description: "The number that we add to our starting number.",
+                    sanitize: true,
+                    validate: {
+                        required: true,
+                    },
                 }
             },
             outputs: {
@@ -43,10 +47,18 @@ class AddCommand extends Command {
      * @returns {{value: number}}
      */
     execute(dispatcher) {
-        let start = this.inputs.get('start');
+        let value    = 0;
+
+        let start    = this.inputs.get('start');
         let addition = this.inputs.get('addition');
 
-        let value = start + addition;
+        if (start) {
+            value += start.getValue();
+        }
+
+        if (addition) {
+            value += addition.getValue();
+        }
 
         return { value };
     }

@@ -1,42 +1,24 @@
 class InputValidationEvent {
     /**
-     * Provides data access to a command input and the assigned value.
+     * Provides data access to an input and the assigned value.
      *
      * @param {Input} input
-     * @param {*} value
+     * @param {object} options
      * @param {Error[]} errors
      */
-    constructor(input, value, errors = []) {
-        this._input  = input;
-        this._value  = value;
-        this._errors = errors;
+    constructor(input, options, errors = []) {
+        this._input   = input;
+        this._options = options;
+        this._errors  = errors;
     }
 
     /**
-     * Returns the input variables name.
+     * Returns the type of input.
      *
-     * @returns {string|*}
+     * @returns {*}
      */
-    getName() {
-        return this._input.getName();
-    }
-
-    /**
-     * Returns the lookup name of the property where the input value is located.
-     *
-     * @returns {string}
-     */
-    getLookup() {
-        return this._input.getLookup();
-    }
-
-    /**
-     * Returns the command that was executed in order to get our input value.
-     *
-     * @returns {Command|*}
-     */
-    getCommand() {
-        return this._input.getCommand();
+    getType() {
+        return this._input.getType();
     }
 
     /**
@@ -45,7 +27,16 @@ class InputValidationEvent {
      * @returns {Object}
      */
     getValue() {
-        return this._value;
+        return this._input.getValue();
+    }
+
+    /**
+     * Returns the input validation options.
+     *
+     * @returns {object}
+     */
+    getOptions() {
+        return this._options;
     }
 
     /**

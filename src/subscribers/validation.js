@@ -5,11 +5,11 @@ const Events = require('../events');
  * @var {InputEvent} event
  */
 Events.on(Events.INPUT_VALIDATED, /** @param {InputValidationEvent} event */ (event) => {
-    let input = event.getInput();
-    console.log("VALIDATING", input);
+    let type    = event.getType();
+    let value   = event.getValue();
+    let options = event.getOptions();
 
-    let type = input.getType();
     if (Validator.has(type)) {
-        Validator.check(value, type).forEach(event.addError);
+        Validator.check(value, type, options).forEach(event.addError);
     }
 });

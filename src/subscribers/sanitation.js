@@ -6,7 +6,6 @@ const Events = require('../events');
  */
 Events.on(Events.INPUT_SANITIZED, /** @param {InputEvent} event */ (event) => {
     let input = event.getInput();
-
     let type  = input.getType();
     let value = input.getValue();
 

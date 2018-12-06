@@ -139,7 +139,7 @@ describe('Command', function() {
             let after   = command.getResult('value');
 
             assert.isNull(before);
-            assert.isNotEmpty(after);
+            assert.isNotNull(after);
             assert.equal(results.value, after);
         });
 
