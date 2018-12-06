@@ -75,7 +75,6 @@ class Process {
 
         // Stop the command dispatcher and mark as finished.
         this._dispatcher.stopProcessing();
-        this._finished = true;
 
         Events.emit(Events.PROCESS_FINISHED, event);
 
@@ -111,15 +110,6 @@ class Process {
      */
     getCommand() {
         return this._command;
-    }
-
-    /**
-     * Tells whether the this process has finished executing.
-     *
-     * @returns {boolean}
-     */
-    isFinished() {
-        return this._finished;
     }
 }
 

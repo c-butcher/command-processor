@@ -55,7 +55,7 @@ describe('Process', function() {
     });
 
     describe('run()', () => {
-        it('passes when a process is marked as finished', async () => {
+        it('passes when a process returns a result', async () => {
             let dispatcher = new Dispatcher(this);
             dispatcher.startProcessing();
 
@@ -84,11 +84,11 @@ describe('Process', function() {
             let command = new Math.AddCommand(inputs);
             let process = new Process(dispatcher, command);
 
-            assert.isFalse(process.isFinished());
+            assert.isNull(process.getResults());
 
             await process.run();
 
-            assert.isTrue(process.isFinished());
+            assert.hasAllKeys(process.getResults(), ['value']);
         });
     });
 
