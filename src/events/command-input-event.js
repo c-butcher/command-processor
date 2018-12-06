@@ -34,7 +34,7 @@ class CommandInputEvent {
      * @returns {Command|*}
      */
     getCommand() {
-        return this._command;
+        return this._input.getCommand();
     }
 
     /**

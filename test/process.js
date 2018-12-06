@@ -1,6 +1,7 @@
 const { assert, expect } = require('chai');
 const Process = require('../src/process');
 const Dispatcher = require('../src/dispatcher');
+const CommandInput = require('../src/command-input');
 
 const Math = require('../src/commands/math');
 const Primitives = require('../src/commands/primitives');
@@ -59,15 +60,15 @@ describe('Process', function() {
             let dispatcher = new Dispatcher(this);
             dispatcher.startProcessing();
 
-            let inputs = [{
-                name: 'start',
-                from: 'value',
-                command: new Primitives.NumberCommand([], { value: 0 })
-            }, {
-                name: 'addition',
-                from: 'value',
-                command: new Primitives.NumberCommand([], { value: 8 })
-            }];
+            let commands = {
+                start: new Primitives.NumberCommand([], { value: 5 }),
+                addition: new Primitives.NumberCommand([], { value: 10 })
+            };
+
+            let inputs = [
+                new CommandInput(commands.start, {name: 'start', lookup: 'value'}),
+                new CommandInput(commands.addition, {name: 'addition', lookup: 'value'})
+            ];
 
             let command = new Math.AddCommand(inputs);
             let process = new Process(dispatcher, command);
@@ -107,15 +108,15 @@ describe('Process', function() {
             let dispatcher = new Dispatcher(this);
             dispatcher.startProcessing();
 
-            let inputs = [{
-                name: 'start',
-                from: 'value',
-                command: new Primitives.NumberCommand([], { value: 0 })
-            }, {
-                name: 'addition',
-                from: 'value',
-                command: new Primitives.NumberCommand([], { value: 8 })
-            }];
+            let commands = {
+                start: new Primitives.NumberCommand([], { value: 5 }),
+                addition: new Primitives.NumberCommand([], { value: 10 })
+            };
+
+            let inputs = [
+                new CommandInput(commands.start, {name: 'start', lookup: 'value'}),
+                new CommandInput(commands.addition, {name: 'addition', lookup: 'value'})
+            ];
 
             let command = new Math.AddCommand(inputs);
             let process = new Process(dispatcher, command);

@@ -1,34 +1,54 @@
-const Command = require('./command');
 const CommandEvents = require('./command-events');
 const CommandInputError = require('formatted-error');
 const CommandInputEvent = require('./events/command-input-event');
+const CommandInputValidationEvent = require('./events/command-input-validation-event');
 
 class CommandInput {
     /**
      * Creates a link between one commands input and another commands output.
      *
-     * @param {string} name
-     * @param {string} from
      * @param {Command} command
+     * @param {object} options
      */
-    constructor(name, from, command) {
-        if (typeof name !== 'string') {
+    constructor(command, options = {}) {
+        if (typeof options.name !== 'string') {
             throw new CommandInputError("Argument 'name' must be a string.");
         }
 
-        if (typeof from !== 'string') {
-            throw new CommandInputError("Argument 'from' must be a string.");
+        if (typeof options.lookup !== 'string') {
+            throw new CommandInputError("Argument 'lookup' must be a string.");
         }
 
-        if (!(command instanceof Command)) {
+        if (typeof command !== 'object' || typeof command.execute !== 'function') {
             throw new CommandInputError("Argument 'command' must be instance of Command.");
         }
 
-        this._name = name;
-        this._from = from;
-        this._value = undefined;
-        this._command = command;
+        options = Object.assign(this.constructor.defaults(), options);
+
+        this._name     = options.name;
+        this._lookup   = options.lookup;
+        this._required = options.required;
+        this._sanitize = options.sanitize;
+        this._validate = options.validate;
+        this._command  = command;
+        this._value    = undefined;
     }
+
+    /**
+     * The default options for a command input.
+     *
+     * @returns {{name: null, lookup: null, required: boolean, sanitize: boolean, validate: boolean, command: null}}
+     */
+    static defaults() {
+        return {
+            name: null,
+            lookup: null,
+            required: false,
+            sanitize: true,
+            validate: false,
+            command: null,
+        };
+    };
 
     /**
      * Returns the name of the commands input.
@@ -40,19 +60,21 @@ class CommandInput {
     }
 
     /**
+     * Returns the name of the output variable which contains our input value.
+     *
+     * @returns {string}
+     */
+    getLookup() {
+        return this._lookup;
+    }
+
+    /**
      * Returns the input value or "undefined" when the value is not found.
      *
-     * @returns {*}
+     * @returns {*|undefined}
      */
     getValue() {
-        let value = undefined;
-        let results = this._command.getResults();
-
-        if (results && results[this._from]) {
-            value = results[this._from];
-        }
-
-        return value;
+        return this._value;
     }
 
     /**
@@ -63,11 +85,7 @@ class CommandInput {
      * @returns {CommandInput}
      */
     setValue(value) {
-        let event = new CommandInputEvent(this, value);
-        CommandEvents.emit(CommandEvents.InputAssigned, event);
-
-        this._value = event.getValue();
-
+        this._value = value;
         return this;
     }
 
@@ -78,6 +96,68 @@ class CommandInput {
      */
     getCommand() {
         return this._command;
+    }
+
+    /**
+     * Returns whether this input is required.
+     *
+     * @returns {boolean}
+     */
+    isRequired() {
+        return this._required;
+    }
+
+    /**
+     * Tells us whether we should run our sanitation methods.
+     *
+     * @returns {boolean}
+     */
+    shouldSanitize() {
+        return !!this._sanitize;
+    }
+
+    /**
+     * Tells us whether we should run our validation methods.
+     *
+     * @returns {boolean}
+     */
+    shouldValidate() {
+        return !!this._validate;
+    }
+
+    /**
+     * Tells us whether to sanitize our input.
+     *
+     * @returns {CommandInput}
+     */
+    sanitize() {
+        if (typeof this._sanitize === 'function') {
+            this._value = this._sanitize(this._value);
+        }
+
+        let event = new CommandInputEvent(this, this._value);
+        CommandEvents.emit(CommandEvents.INPUT_SANITIZED, event);
+
+        this._value = event.getValue();
+
+        return this;
+    }
+
+    /**
+     * Tells us whether to validate our input.
+     *
+     * @returns {Error[]}
+     */
+    validate() {
+        let errors = [];
+        if (typeof this._validate === 'function') {
+            errors = this._validate(this._value);
+        }
+
+        let event = new CommandInputValidationEvent(this, this._value, errors);
+        CommandEvents.emit(CommandEvents.INPUT_VALIDATED, event);
+
+        return event.getErrors();
     }
 }
 

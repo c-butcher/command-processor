@@ -18,7 +18,6 @@ completely understand every part about how the command object works.
 2. Options
 3. Outputs
 
-
 ```javascript
 const Command = require('command-processor').Command;
 
@@ -46,6 +45,14 @@ class FindByCommand extends Command {
                     description: 'The database model(s) that were found.'
                 }
             },
+            options: {
+                scheme: {
+                    type: 'string',
+                    required: true,
+                    sanitize: true,
+                    description: "The database scheme that will be looked in."
+                }
+            }
         }
     }
     
@@ -55,7 +62,7 @@ class FindByCommand extends Command {
         }
         
         let keywords = this.inputs.get('keywords');
-        let scheme   = this.inputs.get('scheme');
+        let scheme   = this.options.get('scheme');
         
         let models = app.find(scheme)
                         .by(keywords);

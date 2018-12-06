@@ -1,6 +1,7 @@
 const CommandError = require('formatted-error');
 const CommandEvent = require('./events/command-event');
 const CommandEvents = require('./command-events');
+const CommandInput = require('./command-input');
 const Dispatcher = require('./dispatcher');
 
 /**
@@ -9,9 +10,8 @@ const Dispatcher = require('./dispatcher');
  * @function execute
  */
 class Command {
-
     /**
-     * @param {[{name: string, from: string, command: Command}]} inputs
+     * @param {CommandInput[]} inputs
      * @param {object} options
      */
     constructor(inputs = [], options = {}) {
@@ -31,6 +31,7 @@ class Command {
             throw new CommandError("Argument 'inputs' must be an array.");
         }
 
+        /** @type {Map<string, CommandInput>} */
         this.inputs = new Map();
         this.options = new Map(Object.entries(
             Object.assign(this.constructor.defaults(), options)
@@ -38,7 +39,8 @@ class Command {
 
         this._finished = false;
         this._results = null;
-        this._inputs = inputs;
+
+        inputs.forEach((input) => this.inputs.set(input.getName(), input));
     }
 
     /**
@@ -68,6 +70,15 @@ class Command {
     }
 
     /**
+     * Returns the name of the command.
+     *
+     * @returns {string}
+     */
+    toString() {
+        return this.constructor.describe().name;
+    }
+
+    /**
      * Process this command and return the resulting output.
      *
      * When the dispatcher has stopped processing, or this command has already been processed,
@@ -82,16 +93,18 @@ class Command {
             return this._results;
         }
 
+        let event = new CommandEvent(this);
+        CommandEvents.emit(CommandEvents.COMMAND_STARTED, event);
+
         return Promise
             .resolve(dispatcher)
-            .then(dispatcher => this._prepare(dispatcher))
+            .then(dispatcher => this._loadInputs(dispatcher))
             .then(dispatcher => this.execute(dispatcher))
             .then(results    => this._finish(results));
     }
 
     /**
-     * Prepares the command before it can be executed. This involves executing
-     * other commands in order to get the inputs for the current command.
+     * Loads all of the input values by executing all the input commands.
      *
      * @param {Dispatcher} dispatcher
      *
@@ -99,33 +112,46 @@ class Command {
      *
      * @private
      */
-    async _prepare(dispatcher) {
-        for (let i = 0; i < this._inputs.length; i++) {
-            let input = this._inputs[i];
-            await input.command.process(dispatcher)
-                .then(results => this._setInputFromResult(input, results));
-        }
+    _loadInputs(dispatcher) {
+        this.inputs.forEach(input => this._loadInput(input, dispatcher));
 
         return dispatcher;
     }
 
     /**
-     * Sets our input from the results we received from our input command.
+     * Load a single input value.
      *
-     * @param input
-     * @param results
+     * @param {CommandInput} input
+     * @param {Dispatcher} dispatcher
+     *
+     * @returns {Promise<*>}
      *
      * @private
      */
-    _setInputFromResult(input, results) {
-        if (!results || typeof results[input.from] === "undefined") {
-            throw new CommandError("Command '{command}' does not have '{name}' output.", {
-                name: input.from,
-                command: input.command.constructor.describe().name
+    async _loadInput(input, dispatcher) {
+        let lookup  = input.getLookup();
+        let command = input.getCommand();
+        let results = await command.process(dispatcher);
+
+        if (!results || !results[lookup]) {
+            throw new CommandError("Command '{command}' did not have the '{output}' output.", {
+                command: command.constructor.describe().name,
+                results: results,
+                output: lookup,
             });
         }
 
-        this.inputs.set(input.name, results[input.from]);
+        input.setValue(results[lookup]);
+
+        if (input.shouldSanitize()) {
+            input.sanitize();
+        }
+
+        if (input.shouldValidate()) {
+            input.validate();
+        }
+
+        return dispatcher;
     }
 
     /**
@@ -142,7 +168,7 @@ class Command {
         this._results = results;
 
         let event = new CommandEvent(this);
-        CommandEvents.emit(CommandEvents.Finished, event);
+        CommandEvents.emit(CommandEvents.COMMAND_FINISHED, event);
 
         return event.getResults();
     }

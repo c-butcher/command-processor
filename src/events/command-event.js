@@ -3,9 +3,11 @@ class CommandEvent {
      * Provides data access to a command.
      *
      * @param {Command} command
+     * @param {Dispatcher} dispatcher
      */
-    constructor(command) {
+    constructor(command, dispatcher) {
         this._command = command;
+        this._dispatcher = dispatcher;
     }
 
     /**
@@ -24,6 +26,15 @@ class CommandEvent {
      */
     getDescription() {
         return this._command.constructor.describe();
+    }
+
+    /**
+     * Returns the dispatcher.
+     *
+     * @returns {Dispatcher}
+     */
+    getDispatcher() {
+        return this._dispatcher;
     }
 
     /**
