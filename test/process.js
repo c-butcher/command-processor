@@ -9,7 +9,7 @@ const Primitives = require('./commands/primitives');
 describe('Process', function() {
 
     describe('constructor(dispatcher, command, options)', () => {
-        it('passes when instantiated without an error', async () => {
+        it('passes when instantiated without an error', () => {
             expect(() => {
                 let dispatcher = new Dispatcher(this);
                 let command = new Primitives.NumberCommand([], { value: 10 });
@@ -17,21 +17,21 @@ describe('Process', function() {
             }).to.not.throw();
         });
 
-        it('throws error without dispatcher', async () => {
+        it('throws error without dispatcher', () => {
             expect(() => {
                 let command = new Primitives.NumberCommand([], { value: 10 });
                 let process = new Process(null, command);
             }).to.throw();
         });
 
-        it('throws error without command', async () => {
+        it('throws error without command', () => {
             expect(() => {
                 let dispatcher = new Dispatcher(this);
                 let process = new Process(dispatcher, null);
             }).to.throw();
         });
 
-        it('throws error without options', async () => {
+        it('throws error without options', () => {
             expect(() => {
                 let dispatcher = new Dispatcher(this);
                 let command = new Primitives.NumberCommand([], { value: 10 });
@@ -55,7 +55,7 @@ describe('Process', function() {
     });
 
     describe('run()', () => {
-        it('passes when a process returns a result', async () => {
+        it('passes when a process returns a result', ( done ) => {
             let dispatcher = new Dispatcher(this);
             dispatcher.startProcessing();
 
@@ -86,9 +86,9 @@ describe('Process', function() {
 
             assert.isNull(process.getResults());
 
-            await process.run();
-
-            assert.hasAllKeys(process.getResults(), ['value']);
+            process.run().then((results) => {
+                expect(results).to.have.property('value');
+            }).finally(done);
         });
     });
 
@@ -115,7 +115,7 @@ describe('Process', function() {
     });
 
     describe('getResults()', () => {
-        it('passes when a process returns a single result after running', async () => {
+        it('passes when a process returns a result', ( done ) => {
             let dispatcher = new Dispatcher(this);
             dispatcher.startProcessing();
 
@@ -144,13 +144,12 @@ describe('Process', function() {
             let command = new Math.AddCommand(inputs);
             let process = new Process(dispatcher, command);
 
-            await process.run();
-
-            assert.isObject(process.getResults());
-            assert.hasAllKeys(process.getResults(), ['value']);
+            process.run().then((results) => {
+                expect(results).to.be.an('object');
+            }).catch(e => console.log(e)).finally(done);
         });
 
-        it('passes when a process returns an empty result before running', async () => {
+        it('passes when a process returns an empty result before running', () => {
             let dispatcher = new Dispatcher(this);
 
             let command = new Math.AddCommand([]);

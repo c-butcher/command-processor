@@ -6,7 +6,6 @@ const Input = require('./src/input');
 const InputSanitationEvent = require('./src/events/input-sanitation-event');
 const InputValidationEvent = require('./src/events/input-validation-event');
 const Process = require('./src/process');
-const ProcessEvent = require('./src/events/process-event');
 
 let softDependencies = {
     "data-sanitizers": "./src/subscribers/sanitation",
@@ -28,5 +27,4 @@ module.exports = {
     InputSanitationEvent,
     InputValidationEvent,
     Process,
-    ProcessEvent,
 };

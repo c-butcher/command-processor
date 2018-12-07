@@ -9,12 +9,8 @@ class Events extends EventEmitter {
         this.INPUT_VALIDATED = 'command.input.validated';
         this.INPUT_SANITIZED = 'command.input.sanitized';
 
-        this.COMMAND_READY    = 'command.ready';
         this.COMMAND_STARTED  = 'command.started';
         this.COMMAND_FINISHED = 'command.finished';
-
-        this.PROCESS_STARTED  = 'process.started';
-        this.PROCESS_FINISHED = 'process.finished';
     }
 
     /**
@@ -30,7 +26,6 @@ class Events extends EventEmitter {
         return instance;
     }
 }
-
 
 /**
  * @type {Events}

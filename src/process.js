@@ -1,8 +1,6 @@
 const Command = require('./command');
 const Dispatcher = require('./dispatcher');
 const ProcessError = require('formatted-error');
-const ProcessEvent = require('./events/process-event');
-const Events = require('./events');
 
 class Process {
     /**
@@ -29,7 +27,6 @@ class Process {
         this._dispatcher = dispatcher;
         this._command    = command;
         this._results    = null;
-        this._finished   = false;
     }
 
     /**
@@ -59,26 +56,27 @@ class Process {
      *
      * @returns {Promise<object>}
      */
-    async run() {
-        // Start our command dispatcher
+    run() {
+        // Start our dispatcher
         this._dispatcher.startProcessing();
 
-        let event = new ProcessEvent(this);
-        Events.emit(Events.PROCESS_STARTED, event);
-
-        this._results = await this._command.process(this._dispatcher);
-
-        // Wash the dispatcher if necessary
+        // but wash the dispatcher in case it was used before.
         if (!this._dispatcher.isStateful()) {
             this._dispatcher.reset();
         }
 
-        // Stop the command dispatcher and mark as finished.
-        this._dispatcher.stopProcessing();
+        // Execute the process and then ...
+        return this._command.process(this._dispatcher).then((results) => {
 
-        Events.emit(Events.PROCESS_FINISHED, event);
+            // ... set the results that our process gave us.
+            this._results = results;
 
-        return this._results;
+            // Stop the dispatcher, who did such a great job
+            this._dispatcher.stopProcessing();
+
+            // and tell everyone about it!
+            return this._results;
+        });
     }
 
     /**
