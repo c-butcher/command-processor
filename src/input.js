@@ -25,6 +25,7 @@ class Input {
 
         options = Object.assign(this.constructor.defaults(), options);
 
+        this._key         = options.key;
         this._name        = options.name;
         this._description = options.description;
         this._type        = options.type;
@@ -43,14 +44,15 @@ class Input {
      */
     static defaults() {
         return {
+            key: null,
             name: null,
-            description: null,
             type: 'string',
             lookup: null,
+            description: null,
+            command: null,
             required: false,
             sanitize: true,
             validate: false,
-            command: null,
         };
     };
 
