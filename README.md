@@ -4,32 +4,36 @@
 [![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://travis-ci.com/c-butcher/command-processor)
 
 ### Installation
+First you'll need to have NodeJS installed on your computer. Then uou can install our command-processor module
+by opening your terminal and typing the following command...
 
 ```bash
 > npm install --save command-processor
 ```
+
 ### Definitions
 | Word       | Definition |
 |------------|------------|
-| Process    | A group of commands working together towards a purpose.|
+| Process    | A group of commands working together towards a purpose. |
 | Command    | Single unit-of-work that accepts inputs and returns outputs. |
 | Input      | An input is a command that when executed returns the input values that are used in another command. |
 | Dispatcher | A container for all the application level services like databases, template, mailers, etc. |
 | Processing | The execution and transfer of data from one command to the next |
+| Branch     | Branches are created when a command executes two or more inputs commands. | 
 
-#### Initiator vs Terminator
-Every process has an "end goal", like how web applications send  HTTP responses,
-and CLI's return an exit code. Even image matching applications would return classifiers
-and probabilities.
+### Processes
+Processes are groups of commands that work together towards a goal. One command passing its
+output to another command until the final goal has been achieved.
 
-So our processes will always start with a single command, and that will always be the final
-command that's executed in the process. We call this the "Initiator" command, because it is 
-the point that we start building from. You can see it highlighted in green below.
+All processes have some type of end-goal, such as a web application returning an HTTP response,
+or a CLI application returning an exit code. We use these end-goal as the **initiator**
+command, and it's where we will start building our process from. This command is highlighted
+with green in the image below....
 
 ![Rest Example](docs/images/rest-example.jpg)
 
-Terminator commands have no inputs, which means that we've reached the end to one of the chains in the process.
-The Initiator command is the final goal
+The **terminator** commands are used to complete the execution of a chain. Terminator are commands that don't have any -required- inputs, and can be executed without having to depend on any
+other commands. 
 
 ### Input
 
@@ -113,32 +117,20 @@ class FindByCommand extends Command {
 module.exports = FindByCommand;
 ```
 
-### Why Describe?
-You're probably wondering why our commands have so much code describing our commands. It's because
-our commands are designed to be used by end-users.
-
 ### Validation and Sanitation
 The command processor does not have any validation or sanitation built-in directly, but we do have
-events for handling both of these issues. The easiest solution would be to install the [data-sanitizers](https://github.com/c-butcher/data-sanitizers)
-and/or [data-validators](https://github.com/c-butcher/data-validators) packages.
+an event system for handling both of these issues. The easiest way to get sanitation and validation working
+is to install the [data-sanitizers](https://github.com/c-butcher/data-sanitizers) and/or
+[data-validators](https://github.com/c-butcher/data-validators) packages.
 
 ```bash
 > npm install --save data-sanitizers
 > npm install --save data-validators
 ```
 
-Our command processor will detect the packages above and start using them immediately without having
-to do any configuration.
+The command processor will detect the packages above and start using them immediately without having
+to do any configuration. Pretty neat, right?
 
 
-There will be times when our sanitation/validation packages might not be right for you, in which case
-you can [create your own custom validators and sanitizers](docs/creating-validators-and-sanitizers.md).
-
-### Input and Output Values
-
-
-### Execution of the Command
-
-
-### Accessing Data While Executing
-Our system sanitizes and validates the inputs for you!
+We also know that sometimes our sanitation and validation packages won't be the solution that you're looking for,
+in which case you can check out how to [create your own custom validators and sanitizers](docs/creating-validators-and-sanitizers.md).
