@@ -9,7 +9,7 @@ const Primitives = require('./commands/primitives');
 describe('Process', function() {
 
     describe('constructor(dispatcher, command, options)', () => {
-        it('passes when instantiated without an error', () => {
+        it('passes when initiated with dispatcher and command', () => {
             expect(() => {
                 let dispatcher = new Dispatcher(this);
                 let command = new Primitives.NumberCommand([], { value: 10 });
@@ -17,40 +17,18 @@ describe('Process', function() {
             }).to.not.throw();
         });
 
-        it('throws error without dispatcher', () => {
+        it('fails without dispatcher', () => {
             expect(() => {
                 let command = new Primitives.NumberCommand([], { value: 10 });
                 let process = new Process(null, command);
             }).to.throw();
         });
 
-        it('throws error without command', () => {
+        it('fails without command', () => {
             expect(() => {
                 let dispatcher = new Dispatcher(this);
                 let process = new Process(dispatcher, null);
             }).to.throw();
-        });
-
-        it('throws error without options', () => {
-            expect(() => {
-                let dispatcher = new Dispatcher(this);
-                let command = new Primitives.NumberCommand([], { value: 10 });
-                let process = new Process(dispatcher, command, null);
-            }).to.throw();
-        });
-    });
-
-    describe('describe()', () => {
-        it('passes when an object is returned', () => {
-            let description = Process.describe();
-            assert.isObject(description);
-        });
-    });
-
-    describe('defaults()', () => {
-        it('passes when an object is returned', () => {
-            let defaults = Process.defaults();
-            assert.isObject(defaults);
         });
     });
 
@@ -69,15 +47,13 @@ describe('Process', function() {
                     name: 'start',
                     type: 'number',
                     lookup: 'value',
-                    required: true,
-                    sanitize: true,
+                    sanitize: false,
                 }),
                 new Input(commands.addition, {
                     name: 'addition',
                     type: 'number',
                     lookup: 'value',
-                    required: true,
-                    sanitize: true,
+                    sanitize: false,
                 })
             ];
 
@@ -88,7 +64,7 @@ describe('Process', function() {
 
             process.run().then((results) => {
                 expect(results).to.have.property('value');
-            }).finally(done);
+            }).catch(e => console.log(e)).finally(done);
         });
     });
 
@@ -146,7 +122,7 @@ describe('Process', function() {
 
             process.run().then((results) => {
                 expect(results).to.be.an('object');
-            }).catch(e => console.log(e)).finally(done);
+            }).finally(done).catch(e => console.log(e));
         });
 
         it('passes when a process returns an empty result before running', () => {

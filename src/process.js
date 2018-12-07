@@ -8,9 +8,8 @@ class Process {
      *
      * @param {Dispatcher} dispatcher
      * @param {Command} command
-     * @param {object} options
      */
-    constructor(dispatcher, command, options = {}) {
+    constructor(dispatcher, command) {
         if (!(dispatcher instanceof Dispatcher)) {
             throw new ProcessError("Argument 'dispatcher' must be an instance of Dispatcher.")
         }
@@ -19,36 +18,9 @@ class Process {
             throw new ProcessError("Argument 'command' must be an instance of Command.")
         }
 
-        if (!options || typeof options !== 'object') {
-            throw new ProcessError("Argument 'options' must be an object.")
-        }
-
-        this._options    = Object.assign(this.constructor.defaults(), options);
         this._dispatcher = dispatcher;
         this._command    = command;
         this._results    = null;
-    }
-
-    /**
-     * Describes the type of process that this is.
-     *
-     * @returns {{key: string, name: string, description: string}}
-     */
-    static describe() {
-        return {
-            key: 'process',
-            name: 'Process',
-            description: 'Executes a list of commands in the order they are given.'
-        };
-    }
-
-    /**
-     * Default options for a dispatcher.
-     *
-     * @returns {object}
-     */
-    static defaults() {
-        return {};
     }
 
     /**
@@ -57,21 +29,22 @@ class Process {
      * @returns {Promise<object>}
      */
     run() {
-        // Start our dispatcher
-        this._dispatcher.startProcessing();
 
-        // but wash the dispatcher in case it was used before.
+        // First we wash our dispatcher in case it was used before.
         if (!this._dispatcher.isStateful()) {
             this._dispatcher.reset();
         }
 
-        // Execute the process and then ...
+        // Then we tell the dispatcher to start processing by
+        this._dispatcher.startProcessing();
+
+        // executing the command and ...
         return this._command.process(this._dispatcher).then((results) => {
 
-            // ... set the results that our process gave us.
+            // ... setting the results that were returned.
             this._results = results;
 
-            // Stop the dispatcher, who did such a great job
+            // Then we stop the dispatcher, who did such a great job,
             this._dispatcher.stopProcessing();
 
             // and tell everyone about it!
@@ -85,10 +58,6 @@ class Process {
      * @returns {object}
      */
     getResults() {
-        if (!this._results || typeof this._results !== 'object') {
-            return null;
-        }
-
         return this._results;
     }
 
