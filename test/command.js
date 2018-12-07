@@ -215,33 +215,8 @@ describe('Command', function() {
 
             let command  = new Math.AddCommand(inputs);
             let results  = command.getResults();
-            let finished = command.isFinished();
 
             assert.isNull(results);
-            assert.isFalse(finished);
-        });
-    });
-
-    describe('isFinished()', () => {
-        it('passes when the command is finished', async () => {
-            let dispatcher = new Dispatcher(this);
-            dispatcher.startProcessing();
-
-            let command = new Math.AddCommand();
-            await command.process(dispatcher);
-            let isFinished = command.isFinished();
-
-            assert.isTrue(isFinished);
-        });
-
-        it ('fails when the command has not finished', async () => {
-            let dispatcher = new Dispatcher(this);
-            dispatcher.startProcessing();
-
-            let command = new Math.AddCommand();
-            let isFinished = command.isFinished();
-
-            assert.isFalse(isFinished);
         });
     });
 });

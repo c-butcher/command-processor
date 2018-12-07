@@ -37,9 +37,8 @@ class Command {
         this.inputs = new Map();
         this.options = new Map(Object.entries(options));
 
-        this._finished = false;
-        this._results  = null;
         this._inputs = inputs;
+        this._results = null;
     }
 
     /**
@@ -88,22 +87,34 @@ class Command {
      * @returns {Promise<object>}
      */
     async process(dispatcher) {
-        if (!dispatcher.isProcessing() || this.isFinished()) {
+
+        // First we check the dispatcher to see if it's okay to run.
+        if (!dispatcher.isProcessing()) {
             return this._results;
         }
 
+        // Next we tell everyone that we're about to start executing,
         let event = new CommandEvent(this, dispatcher);
         Events.emit(Events.COMMAND_STARTED, event);
 
+        // but first we need to load all our inputs and sanitize them first.
         for (let input of this._inputs) {
             await this._prepare(input, dispatcher);
         }
 
-        await this._execute(dispatcher);
+        // Then the only thing left to do is...
+        return new Promise((resolve, reject) => {
 
-        Events.emit(Events.COMMAND_FINISHED, event);
+            // ...execute our command ...
+            this._results = this.execute(dispatcher);
 
-        return event.getResults();
+            // ... tell everyone about it ...
+            let event = new CommandEvent(this, dispatcher);
+            Events.emit(Events.COMMAND_FINISHED, event);
+
+            // ... and show them the results.
+            resolve(this._results);
+        });
     }
 
     /**
@@ -148,31 +159,6 @@ class Command {
     }
 
     /**
-     * Executes the command.
-     *
-     * @param dispatcher
-     *
-     * @returns {Promise<object>}
-     *
-     * @private
-     */
-    _execute(dispatcher) {
-        return new Promise((resolve, reject) => {
-            let results = this.execute(dispatcher);
-
-            this._finished = true;
-            this._results = results;
-
-            let event = new CommandEvent(this, dispatcher);
-            Events.emit(Events.COMMAND_FINISHED, event);
-
-            this._results = event.getResults();
-
-            return resolve(this._results);
-        });
-    }
-
-    /**
      * Returns a single result from the commands output.
      *
      * @param {string} name
@@ -194,21 +180,8 @@ class Command {
      * @returns {object}
      */
     getResults() {
-        if (!this._results) {
-            return null;
-        }
-
-        return Object.assign({}, this._results);
+        return this._results;
     }
-
-    /**
-     * Tells whether this command has finished executing.
-     *
-     * @returns {boolean}
-     */
-    isFinished() {
-        return this._finished;
-    };
 }
 
 module.exports = Command;
