@@ -34,13 +34,33 @@ class LoadCommandsEvent {
     }
 
     /**
-     * Check to see if a specific group exists.
+     * Sets a group of commands.
      *
-     * @param name
-     * @returns {boolean}
+     * @param {string} name
+     * @param {function} commands
+     *
+     * @returns {LoadCommandsEvent}
      */
-    hasGroup(name) {
-        return this._groups.has(name);
+    addGroup(name, commands) {
+        if (!Array.isArray(commands)) {
+            throw new LoadError("Argument 'commands' must be an array or object.");
+        }
+
+        let group = this.getGroup(name);
+
+        for (let command of commands) {
+            if (typeof command !== 'function' || command.execute !== 'function') {
+                throw new LoadError("Command group '{name}' has an invalid command.", {
+                    name
+                });
+            }
+
+            let key = command.constructor.describe().key;
+
+            group.set(key, command);
+        }
+
+        return this;
     }
 
     /**
@@ -59,21 +79,22 @@ class LoadCommandsEvent {
     }
 
     /**
-     * Sets a group of commands.
+     * Returns a list of all the command groups.
      *
-     * @param {string} name
-     * @param {array} commands
-     *
-     * @returns {LoadCommandsEvent}
+     * @returns {Map<string, function>}
      */
-    addGroup(name, commands) {
-        if (!Array.isArray(commands)) {
-            throw new LoadError("Argument 'commands' must be an array or object.");
-        }
+    getGroups() {
+        return this._groups;
+    }
 
-        this._groups.set(name, commands);
-
-        return this;
+    /**
+     * Check to see if a specific group exists.
+     *
+     * @param name
+     * @returns {boolean}
+     */
+    hasGroup(name) {
+        return this._groups.has(name);
     }
 }
 
