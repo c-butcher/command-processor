@@ -11,6 +11,7 @@ sure that doesn't happen, we need to sanitize our data.
 - [Where are the Sanitizers?](#where-are-the-sanitizers)
 - [Sanitize Callback](#sanitize-callback)
 - [Sanitation Event](#sanitation-event)
+    - [Sanitizer Options](#sanitation-options)
     - [Event Object](#event-object)
     - [Event Example](#event-example)
 
@@ -18,32 +19,43 @@ sure that doesn't happen, we need to sanitize our data.
 ## Where are the Sanitizers?
 The command processor doesn't ship with any sanitizers because they are considered a
 separate component that's outside the scope of this project. We do have a `data-sanitizers`
-package that integrates seamlessly, and you can install it using the node package manager...
+package that integrates seamlessly, and it can be installed by using the following command...
 
 ```bash
 > npm install --save data-sanitizers
 ```
 
-We also understand that our sanitizers aren't the perfect solution to every problem,
-and that some people might want to use other packages. So we created ways for you to
-implement your own sanitizers using either callbacks and / or events.
+We also know that our sanitizers aren't the best solution for everyone, and that's why we
+made it easy to implement new sanitizers using either callbacks and / or events.
 
 ## Sanitize Callback
-One way to sanitize your data is to use the `sanitize` callback in the `Input` options.
-Using callbacks will make it so the sanitation event doesn't fire for this input. The
-callback is simple, and takes the original dirty value as an argument, and returns
+Callbacks are used for fringe cases, like converting an array of strings to an array of numbers.
+You'll probably only use that sanitizer once, so it would be a waste to add it to the global
+sanitation event.
+
+The callback is simple, and takes the original dirty value as an argument, and returns
 the sanitized value.
 
 ```javascript
 // Our age input is a number, that is coming from a string.
-let age = new Input(new StringCommand(null, { text: '20 Years' }), {
-    name: 'age',
-    type: 'number',
-    lookup: 'text',
+let lengths = new Input(new ArrayCommand(null, { values: ['One', 'Two', 'Three'] }), {
+    name: 'lengths',
+    type: 'array',
+    lookup: 'values',
     
-    // Transforms our value to a floating point value
-    sanitize: function(value) {
-        return parseFloat(value);
+    /**
+     * Takes an array of strings and converts it to an array with the string lengths.
+     * 
+     * @param {string[]} strings
+     * 
+     * @returns {number[]}
+     */
+    sanitize: function( strings ) {
+        let value = strings.reduce((accumulator, value) => {
+            accumulator.push(value.length);
+        }, []);
+        
+        return value;
     }
 });
 ```
@@ -53,7 +65,7 @@ The sanitation event is the best way to register a global sanitation method, as 
 fires for every input, right before the value is assigned. The only time a sanitation
 event would be skipped, is if the input used a sanitation callback instead.
 
-### Sanitation Options
+### Sanitizer Options
 The event also passes sanitation options when an object is assigned to the `sanitize`
 property on the Input object. This lets the sanitizers get fancy, and allows them to
 customize the way the values look.
