@@ -3,8 +3,7 @@ const Command = require('../src/command');
 const Dispatcher = require('../src/dispatcher');
 const Input = require('../src/input');
 
-const Math = require('./commands/math');
-const Primitives = require('./commands/primitives');
+const Commands = require('./helpers/commands');
 
 describe('Command', function() {
 
@@ -17,7 +16,7 @@ describe('Command', function() {
 
         it('passes when child command can instantiate', () => {
             expect(() => {
-                let command = new Math.AddCommand();
+                let command = new Commands.AddCommand();
             }).to.not.throw();
         });
     });
@@ -39,11 +38,11 @@ describe('Command', function() {
             let dispatcher = new Dispatcher(this);
 
             let commands = {
-                start: new Primitives.NumberCommand([], { value: 0 }),
-                addition: new Primitives.NumberCommand([], { value: 8 })
+                start: new Commands.NumberCommand([], { value: 0 }),
+                addition: new Commands.NumberCommand([], { value: 8 })
             };
 
-            let command = new Math.AddCommand([
+            let command = new Commands.AddCommand([
                 new Input(commands.start, {
                     name: 'start',
                     type: 'number',
@@ -72,8 +71,8 @@ describe('Command', function() {
             dispatcher.startProcessing();
 
             let commands = {
-                start: new Primitives.NumberCommand([], { value: 5 }),
-                addition: new Primitives.NumberCommand([], { value: 10 })
+                start: new Commands.NumberCommand([], { value: 5 }),
+                addition: new Commands.NumberCommand([], { value: 10 })
             };
 
             let inputs = [
@@ -93,7 +92,7 @@ describe('Command', function() {
                 })
             ];
 
-            let command = new Math.AddCommand(inputs);
+            let command = new Commands.AddCommand(inputs);
             let results = await command.process(dispatcher);
 
             assert.isObject(results);
@@ -108,8 +107,8 @@ describe('Command', function() {
             dispatcher.startProcessing();
 
             let commands = {
-                start: new Primitives.NumberCommand([], { value: 0 }),
-                addition: new Primitives.NumberCommand([], { value: 8 })
+                start: new Commands.NumberCommand([], { value: 0 }),
+                addition: new Commands.NumberCommand([], { value: 8 })
             };
 
             let inputs = [
@@ -129,7 +128,7 @@ describe('Command', function() {
                 })
             ];
 
-            let command = new Math.AddCommand(inputs);
+            let command = new Commands.AddCommand(inputs);
 
             let before  = command.getResult('value');
             let results = await command.process(dispatcher);
@@ -141,7 +140,7 @@ describe('Command', function() {
         });
 
         it('passes when result does not exist', async () => {
-            let command = new Math.AddCommand();
+            let command = new Commands.AddCommand();
 
             let value = command.getResult('non-existent', 'Default Value');
 
@@ -155,8 +154,8 @@ describe('Command', function() {
             dispatcher.startProcessing();
 
             let commands = {
-                start: new Primitives.NumberCommand([], { value: 0 }),
-                addition: new Primitives.NumberCommand([], { value: 8 })
+                start: new Commands.NumberCommand([], { value: 0 }),
+                addition: new Commands.NumberCommand([], { value: 8 })
             };
 
             let inputs = [
@@ -176,7 +175,7 @@ describe('Command', function() {
                 })
             ];
 
-            let command = new Math.AddCommand(inputs);
+            let command = new Commands.AddCommand(inputs);
 
             let before  = command.getResults();
             let results = await command.process(dispatcher);
@@ -192,8 +191,8 @@ describe('Command', function() {
             dispatcher.startProcessing();
 
             let commands = {
-                start: new Primitives.NumberCommand([], { value: 0 }),
-                addition: new Primitives.NumberCommand([], { value: 8 })
+                start: new Commands.NumberCommand([], { value: 0 }),
+                addition: new Commands.NumberCommand([], { value: 8 })
             };
 
             let inputs = [
@@ -213,7 +212,7 @@ describe('Command', function() {
                 })
             ];
 
-            let command  = new Math.AddCommand(inputs);
+            let command  = new Commands.AddCommand(inputs);
             let results  = command.getResults();
 
             assert.isNull(results);
