@@ -17,7 +17,7 @@ const Events = require('../events');
             value = Sanitizer.clean(value, type, options);
         }
 
-        event.setSanitized(value);
+        event.setValue(value);
     }
 
     Events.on(Events.INPUT_SANITATION, sanitationEventHandler);

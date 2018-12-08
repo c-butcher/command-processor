@@ -155,7 +155,6 @@ class Input {
      * @returns {Input}
      */
     sanitize() {
-
         // When there is a sanitation callback we simply need to execute it
         // and then we're done. No need to run our sanitation event below.
         if (typeof this._sanitize === 'function') {
@@ -175,10 +174,7 @@ class Input {
         let event = new InputSanitationEvent(this._type, this._value, options);
         Events.emit(Events.INPUT_SANITATION, event);
 
-        // and then set the sanitized value, but only if it was defined.
-        if (typeof event.getSanitized() !== "undefined") {
-            this._value = event.getSanitized();
-        }
+        this._value = event.getValue();
 
         return this._value;
     }

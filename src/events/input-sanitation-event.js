@@ -10,7 +10,6 @@ class InputSanitationEvent {
         this._type = type;
         this._value = value;
         this._options = options;
-        this._sanitized = undefined;
     }
 
     /**
@@ -27,17 +26,8 @@ class InputSanitationEvent {
      *
      * @param {*} value
      */
-    setSanitized(value) {
-        this._sanitized = value;
-    }
-
-    /**
-     * Returns the sanitized value.
-     *
-     * @returns {*}
-     */
-    getSanitized() {
-        return this._sanitized;
+    setValue(value) {
+        this._value = value;
     }
 
     /**
