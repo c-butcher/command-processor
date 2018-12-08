@@ -29,26 +29,26 @@ class Process {
      * @returns {Promise<object>}
      */
     run() {
+        // We return a promise because our process might take a while, and
+        // we don't want to block any UI or responsive features.
+        return new Promise(async (resolve, reject) => {
 
-        // First we wash our dispatcher in case it was used before.
-        if (!this._dispatcher.isStateful()) {
-            this._dispatcher.reset();
-        }
+            // First we wash our dispatcher in case it was used before.
+            if (!this._dispatcher.isStateful()) {
+                this._dispatcher.reset();
+            }
 
-        // Then we tell the dispatcher to start processing by
-        this._dispatcher.startProcessing();
+            // Then we tell the dispatcher to start processing
+            this._dispatcher.startProcessing();
 
-        // executing the command and ...
-        return this._command.process(this._dispatcher).then((results) => {
+            // We send the dispatcher through our process and get the results
+            this._results = await this._command.process(this._dispatcher);
 
-            // ... setting the results that were returned.
-            this._results = results;
-
-            // Then we stop the dispatcher, who did such a great job,
+            // Then we stop the dispatcher
             this._dispatcher.stopProcessing();
 
-            // and tell everyone about it!
-            return this._results;
+            // and return the results from our process.
+            resolve(this._results);
         });
     }
 
