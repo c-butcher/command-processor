@@ -1,15 +1,15 @@
 const { assert, expect } = require('chai');
 const Process = require('../src/process');
 const Dispatcher = require('../src/dispatcher');
+const Input = require('../src/input');
 
-const Math = require('../src/commands/math');
-const Primitives = require('../src/commands/primitives');
-const Dispatch = require('../src/commands/dispatcher');
+const Math = require('./commands/math');
+const Primitives = require('./commands/primitives');
 
 describe('Process', function() {
 
     describe('constructor(dispatcher, command, options)', () => {
-        it('passes when instantiated without an error', async () => {
+        it('passes when initiated with dispatcher and command', () => {
             expect(() => {
                 let dispatcher = new Dispatcher(this);
                 let command = new Primitives.NumberCommand([], { value: 10 });
@@ -17,66 +17,54 @@ describe('Process', function() {
             }).to.not.throw();
         });
 
-        it('throws error without dispatcher', async () => {
+        it('fails without dispatcher', () => {
             expect(() => {
                 let command = new Primitives.NumberCommand([], { value: 10 });
                 let process = new Process(null, command);
             }).to.throw();
         });
 
-        it('throws error without command', async () => {
+        it('fails without command', () => {
             expect(() => {
                 let dispatcher = new Dispatcher(this);
                 let process = new Process(dispatcher, null);
             }).to.throw();
         });
-
-        it('throws error without options', async () => {
-            expect(() => {
-                let dispatcher = new Dispatcher(this);
-                let command = new Primitives.NumberCommand([], { value: 10 });
-                let process = new Process(dispatcher, command, null);
-            }).to.throw();
-        });
-    });
-
-    describe('describe()', () => {
-        it('passes when an object is returned', () => {
-            let description = Process.describe();
-            assert.isObject(description);
-        });
-    });
-
-    describe('defaults()', () => {
-        it('passes when an object is returned', () => {
-            let defaults = Process.defaults();
-            assert.isObject(defaults);
-        });
     });
 
     describe('run()', () => {
-        it('passes when a process is marked as finished', async () => {
+        it('passes when a process returns a result', ( done ) => {
             let dispatcher = new Dispatcher(this);
             dispatcher.startProcessing();
 
-            let inputs = [{
-                name: 'start',
-                from: 'value',
-                command: new Primitives.NumberCommand([], { value: 0 })
-            }, {
-                name: 'addition',
-                from: 'value',
-                command: new Primitives.NumberCommand([], { value: 8 })
-            }];
+            let commands = {
+                start: new Primitives.NumberCommand([], { value: 5 }),
+                addition: new Primitives.NumberCommand([], { value: 10 })
+            };
+
+            let inputs = [
+                new Input(commands.start, {
+                    name: 'start',
+                    type: 'number',
+                    lookup: 'value',
+                    sanitize: false,
+                }),
+                new Input(commands.addition, {
+                    name: 'addition',
+                    type: 'number',
+                    lookup: 'value',
+                    sanitize: false,
+                })
+            ];
 
             let command = new Math.AddCommand(inputs);
             let process = new Process(dispatcher, command);
 
-            assert.isFalse(process.isFinished());
+            assert.isNull(process.getResults());
 
-            await process.run();
-
-            assert.isTrue(process.isFinished());
+            process.run().then((results) => {
+                expect(results).to.have.property('value');
+            }).then(done).catch(e => console.log(e));
         });
     });
 
@@ -103,37 +91,47 @@ describe('Process', function() {
     });
 
     describe('getResults()', () => {
-        it('passes when a process returns a single result after running', async () => {
+        it('passes when a process returns a result', ( done ) => {
             let dispatcher = new Dispatcher(this);
             dispatcher.startProcessing();
 
-            let inputs = [{
-                name: 'start',
-                from: 'value',
-                command: new Primitives.NumberCommand([], { value: 0 })
-            }, {
-                name: 'addition',
-                from: 'value',
-                command: new Primitives.NumberCommand([], { value: 8 })
-            }];
+            let commands = {
+                start: new Primitives.NumberCommand([], { value: 5 }),
+                addition: new Primitives.NumberCommand([], { value: 10 })
+            };
+
+            let inputs = [
+                new Input(commands.start, {
+                    name: 'start',
+                    type: 'number',
+                    lookup: 'value',
+                    required: true,
+                    sanitize: true,
+                }),
+                new Input(commands.addition, {
+                    name: 'addition',
+                    type: 'number',
+                    lookup: 'value',
+                    required: true,
+                    sanitize: true,
+                })
+            ];
 
             let command = new Math.AddCommand(inputs);
             let process = new Process(dispatcher, command);
 
-            await process.run();
-
-            assert.isObject(process.getResults());
-            assert.hasAllKeys(process.getResults(), ['value']);
+            process.run().then((results) => {
+                expect(results).to.be.an('object');
+            }).then(done).catch(e => console.log(e));
         });
 
-        it('passes when a process returns an empty result before running', async () => {
+        it('passes when a process returns an empty result before running', () => {
             let dispatcher = new Dispatcher(this);
 
             let command = new Math.AddCommand([]);
             let process = new Process(dispatcher, command);
 
-            assert.isObject(process.getResults());
-            assert.isEmpty(process.getResults());
+            assert.isNull(process.getResults());
         });
     });
 });

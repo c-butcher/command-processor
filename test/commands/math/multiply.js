@@ -1,6 +1,6 @@
-const Command = require('../../command');
+const Command = require('../../../src/command');
 
-class DivideCommand extends Command {
+class MultiplyCommand extends Command {
     /**
      * Describes our command.
      *
@@ -8,17 +8,17 @@ class DivideCommand extends Command {
      */
     static describe() {
         return {
-            key: 'divide_number',
-            name: 'Divide Number',
-            description: 'Divide a number.',
+            key: 'multiple_number',
+            name: 'Multiply Number',
+            description: 'Multiply a number.',
             inputs: {
                 start: {
                     type: 'number',
                     description: "The number that we start at."
                 },
-                divisor: {
+                multiplier: {
                     type: 'number',
-                    description: "The number that we divide our starting number by.",
+                    description: "The number that we multiple our starting number by.",
                 }
             },
             outputs: {
@@ -38,12 +38,12 @@ class DivideCommand extends Command {
     static defaults() {
         return {
             start: 0,
-            divisor: 0
+            multiplier: 0
         };
     }
 
     /**
-     * Divides a number by another number.
+     * Multiplies a number by another number.
      *
      * @param {Dispatcher} dispatcher
      *
@@ -55,15 +55,15 @@ class DivideCommand extends Command {
             start = this.options.get('start');
         }
 
-        let divisor = this.inputs.get('divisor');
-        if (!divisor) {
-            divisor = this.options.get('divisor');
+        let multiplier = this.inputs.get('multiplier');
+        if (!multiplier) {
+            multiplier = this.options.get('multiplier');
         }
 
-        let value = start / divisor;
+        let value = start * multiplier;
 
         return { value };
     }
 }
 
-module.exports = DivideCommand;
+module.exports = MultiplyCommand;

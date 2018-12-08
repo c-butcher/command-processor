@@ -1,5 +1,8 @@
 const CommandError = require('formatted-error');
+const CommandEvent = require('./events/command-event');
 const Dispatcher = require('./dispatcher');
+const Events = require('./events');
+const Input = require('./input');
 
 /**
  * Command Class
@@ -9,7 +12,7 @@ const Dispatcher = require('./dispatcher');
 class Command {
 
     /**
-     * @param {[{name: string, from: string, command: Command}]} inputs
+     * @param {Input[]} inputs
      * @param {object} options
      */
     constructor(inputs = [], options = {}) {
@@ -29,14 +32,13 @@ class Command {
             throw new CommandError("Argument 'inputs' must be an array.");
         }
 
-        this.inputs = new Map();
-        this.options = new Map(Object.entries(
-            Object.assign(this.constructor.defaults(), options)
-        ));
+        options = Object.assign(this.constructor.defaults(), options);
 
-        this._finished = false;
-        this._results = null;
+        this.inputs = new Map();
+        this.options = new Map(Object.entries(options));
+
         this._inputs = inputs;
+        this._results = null;
     }
 
     /**
@@ -66,65 +68,112 @@ class Command {
     }
 
     /**
+     * Returns the name of the command.
+     *
+     * @returns {string}
+     */
+    toString() {
+        return this.constructor.describe().name;
+    }
+
+    /**
      * Process this command and return the resulting output.
+     *
+     * When the dispatcher has stopped processing, or this command has already been processed,
+     * then this method will return the cached results.
      *
      * @param {Dispatcher} dispatcher
      *
-     * @returns {Promise|object|null}
+     * @returns {Promise<object>}
      */
-    process(dispatcher) {
-        if (!dispatcher.isProcessing() || this.isFinished()) {
+    async process(dispatcher) {
+
+        // First we check the dispatcher to see if it's okay to run.
+        if (!dispatcher.isProcessing()) {
             return this._results;
         }
 
-        return Promise
-            .resolve(dispatcher)
-            .then(dispatcher => this._prepare(dispatcher))
-            .then(dispatcher => this.execute(dispatcher))
-            .then(results    => this._finish(results));
+        // Next we tell everyone that we're about to start executing,
+        let event = new CommandEvent(this, dispatcher);
+        Events.emit(Events.COMMAND_STARTED, event);
+
+        // but first we need to load all our inputs and sanitize them first.
+        for (let input of this._inputs) {
+            await this._prepare(input, dispatcher);
+        }
+
+        // Then the only thing left to do is...
+        return new Promise((resolve, reject) => {
+
+            // ...execute our command ...
+            this._results = this.execute(dispatcher);
+
+            // ... tell everyone about it ...
+            let event = new CommandEvent(this, dispatcher);
+            Events.emit(Events.COMMAND_FINISHED, event);
+
+            // ... and show them the results.
+            resolve(this._results);
+        });
     }
 
     /**
-     * Prepares the command before it can be executed. This involves executing
-     * other commands in order to get the inputs for the current command.
+     * Executes the input command and then sets the input value from the results.
      *
+     * @param {Input} input
      * @param {Dispatcher} dispatcher
      *
-     * @returns {Dispatcher}
-     */
-    async _prepare(dispatcher) {
-        for (let i = 0; i < this._inputs.length; i++) {
-            let input = this._inputs[i];
-            await input.command.process(dispatcher)
-                .then(results => this._setInputFromResult(input, results));
-        }
-
-        return dispatcher;
-    }
-
-    _setInputFromResult(input, results) {
-        if (!results || typeof results[input.from] === "undefined") {
-            throw new CommandError("Command '{command}' does not have '{name}' output.", {
-                name: input.from,
-                command: input.command.constructor.describe().name
-            });
-        }
-
-        this.inputs.set(input.name, results[input.from]);
-    }
-
-    /**
-     * Finish executing this command by setting the results.
+     * @returns {Promise<object>}
      *
-     * @param {object} results
-     *
-     * @returns {object}
+     * @private
      */
-    _finish(results) {
-        this._finished = true;
-        this._results = results;
+    _prepare(input, dispatcher) {
+        return new Promise(async (resolve, reject) => {
+            let lookup  = input.getLookup();
+            let command = input.getCommand();
 
-        return this.getResults();
+            // We execute the command and wait for it to completely finish before we can continue.
+            // This is because the current command depends on the results of this other command.
+            let results = await command.process(dispatcher);
+            if (!results || typeof results[lookup] === "undefined") {
+                let error = new CommandError("Command '{command}' did not have '{lookup}' output.", {
+                    lookup,
+                    command,
+                });
+
+                // Sometimes the input isn't required, and we only want to
+                // stop processing when we can't find the "required" inputs.
+                if (input.isRequired()) {
+                    return reject(error);
+                }
+
+                // When the input is optional, then it's okay to continue
+                // processing, but we should really throw a warning.
+                // @TODO Throw a "Warning: Optional parameter not found" message
+                return resolve(dispatcher);
+            }
+
+            // Set the un-sanitized value
+            input.setValue(results[lookup]);
+
+            // Since this package doesn't have sanitizers, we decided to
+            // fire an event here so that other packages can handle the sanitation.
+            if (input.shouldSanitize()) {
+                input.sanitize();
+            }
+
+            // Since this package doesn't have validators, we decided to
+            // fire an event here so that other packages can handle the validation.
+            if (input.shouldValidate()) {
+                input.validate();
+            }
+
+            // Then we set the sanitized/validated value for the end-user to access.
+            this.inputs.set(input.getName(), input.getValue());
+
+            // and this input has finito'ed.
+            resolve(dispatcher);
+        });
     }
 
     /**
@@ -136,16 +185,11 @@ class Command {
      * @returns {*}
      */
     getResult(name, defaultValue = null) {
-        if (!this._results || !this._results[name]) {
+        if (!this._results || typeof this._results[name] === "undefined") {
             return defaultValue;
         }
 
-        let result = this._results[name];
-        if (typeof result === 'object') {
-            result = Object.assign({}, result);
-        }
-
-        return result;
+        return this._results[name];
     }
 
     /**
@@ -154,21 +198,8 @@ class Command {
      * @returns {object}
      */
     getResults() {
-        if (!this._results) {
-            return null;
-        }
-
-        return Object.assign({}, this._results);
+        return this._results;
     }
-
-    /**
-     * Tells whether this command has finished executing.
-     *
-     * @returns {boolean}
-     */
-    isFinished() {
-        return this._finished;
-    };
 }
 
 module.exports = Command;

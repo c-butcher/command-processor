@@ -1,5 +1,5 @@
-const Command = require('../../command');
-const Dispatcher = require('../../dispatcher');
+const Command = require('../../../src/command');
+const Dispatcher = require('../../../src/dispatcher');
 
 class NumberCommand extends Command {
     static describe() {

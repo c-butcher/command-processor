@@ -1,6 +1,6 @@
-const Command = require('../../command');
+const Command = require('../../../src/command');
 
-class MultiplyCommand extends Command {
+class SubtractCommand extends Command {
     /**
      * Describes our command.
      *
@@ -8,17 +8,17 @@ class MultiplyCommand extends Command {
      */
     static describe() {
         return {
-            key: 'multiple_number',
-            name: 'Multiply Number',
-            description: 'Multiply a number.',
+            key: 'subtract_number',
+            name: 'Subtract Number',
+            description: 'Subtract a number.',
             inputs: {
                 start: {
                     type: 'number',
                     description: "The number that we start at."
                 },
-                multiplier: {
+                subtraction: {
                     type: 'number',
-                    description: "The number that we multiple our starting number by.",
+                    description: "The number that we subtract from our starting number.",
                 }
             },
             outputs: {
@@ -38,12 +38,12 @@ class MultiplyCommand extends Command {
     static defaults() {
         return {
             start: 0,
-            multiplier: 0
+            subtraction: 0
         };
     }
 
     /**
-     * Multiplies a number by another number.
+     * Decreases a number by another number.
      *
      * @param {Dispatcher} dispatcher
      *
@@ -55,15 +55,15 @@ class MultiplyCommand extends Command {
             start = this.options.get('start');
         }
 
-        let multiplier = this.inputs.get('multiplier');
-        if (!multiplier) {
-            multiplier = this.options.get('multiplier');
+        let subtraction = this.inputs.get('subtraction');
+        if (!subtraction) {
+            subtraction = this.options.get('subtraction');
         }
 
-        let value = start * multiplier;
+        let value = start - subtraction;
 
         return { value };
     }
 }
 
-module.exports = MultiplyCommand;
+module.exports = SubtractCommand;

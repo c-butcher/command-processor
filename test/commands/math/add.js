@@ -1,4 +1,4 @@
-const Command = require('../../command');
+const Command = require('../../../src/command');
 
 class AddCommand extends Command {
     /**
@@ -14,15 +14,18 @@ class AddCommand extends Command {
             inputs: {
                 start: {
                     type: 'number',
-                    description: "The number that we start at."
+                    description: "The number that we start at.",
+                    sanitize: true
                 },
                 addition: {
                     type: 'number',
                     description: "The number that we add to our starting number.",
+                    sanitize: true
                 }
             },
             outputs: {
                 value: {
+                    name: 'Value',
                     type: 'number',
                     description: 'The final value.'
                 }
@@ -38,7 +41,7 @@ class AddCommand extends Command {
      * @returns {{value: number}}
      */
     execute(dispatcher) {
-        let start = this.inputs.get('start');
+        let start    = this.inputs.get('start');
         let addition = this.inputs.get('addition');
 
         let value = start + addition;

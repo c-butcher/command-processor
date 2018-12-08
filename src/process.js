@@ -8,9 +8,8 @@ class Process {
      *
      * @param {Dispatcher} dispatcher
      * @param {Command} command
-     * @param {object} options
      */
-    constructor(dispatcher, command, options = {}) {
+    constructor(dispatcher, command) {
         if (!(dispatcher instanceof Dispatcher)) {
             throw new ProcessError("Argument 'dispatcher' must be an instance of Dispatcher.")
         }
@@ -19,37 +18,9 @@ class Process {
             throw new ProcessError("Argument 'command' must be an instance of Command.")
         }
 
-        if (!options || typeof options !== 'object') {
-            throw new ProcessError("Argument 'options' must be an object.")
-        }
-
         this._dispatcher = dispatcher;
-        this._command = command;
-        this._options = Object.assign(this.constructor.defaults(), options);
-        this._results = [];
-        this._finished = false;
-    }
-
-    /**
-     * Describes the type of process that this is.
-     *
-     * @returns {{key: string, name: string, description: string}}
-     */
-    static describe() {
-        return {
-            key: 'process',
-            name: 'Process',
-            description: 'Executes a list of commands in the order they are given.'
-        };
-    }
-
-    /**
-     * Default options for a dispatcher.
-     *
-     * @returns {object}
-     */
-    static defaults() {
-        return {};
+        this._command    = command;
+        this._results    = null;
     }
 
     /**
@@ -58,53 +29,27 @@ class Process {
      * @returns {Promise<object>}
      */
     run() {
-        // If the process has been run already, then return the results.
-        if (this.isFinished()) {
-            return this._results;
-        }
+        // We return a promise because our process might take a while, and
+        // we don't want to block any UI or responsive features.
+        return new Promise(async (resolve, reject) => {
 
-        // Start our command dispatcher
-        this._dispatcher.startProcessing();
+            // First we wash our dispatcher in case it was used before.
+            if (!this._dispatcher.isStateful()) {
+                this._dispatcher.reset();
+            }
 
-        // Execute the command
-        return Promise
-            .resolve(this._dispatcher)
-            .then(dispatcher => this._command.process(dispatcher))
-            .then(result => this._setResult(result))
-            .then(() => this._shutdown())
-            .then(() => this.getResults());
-    }
+            // Then we tell the dispatcher to start processing
+            this._dispatcher.startProcessing();
 
-    /**
-     * Attempt to shutdown the process.
-     *
-     * @returns {boolean}
-     */
-    _shutdown() {
-        // Wash the dispatcher if necessary
-        if (!this._dispatcher.isStateful()) {
-            this._dispatcher.reset();
-        }
+            // We send the dispatcher through our process and get the results
+            this._results = await this._command.process(this._dispatcher);
 
-        // Stop the command dispatcher
-        this._dispatcher.stopProcessing();
-        this._finished = true;
+            // Then we stop the dispatcher
+            this._dispatcher.stopProcessing();
 
-        return true;
-    }
-
-    /**
-     * Sets the returned results for this process.
-     *
-     * @param {object} result
-     *
-     * @returns {Process}
-     *
-     * @private
-     */
-    _setResult(result) {
-        this._results = result;
-        return this;
+            // and return the results from our process.
+            resolve(this._results);
+        });
     }
 
     /**
@@ -113,11 +58,7 @@ class Process {
      * @returns {object}
      */
     getResults() {
-        if (!this._results || typeof this._results !== 'object') {
-            return null;
-        }
-
-        return Object.assign({}, this._results);
+        return this._results;
     }
 
     /**
@@ -136,15 +77,6 @@ class Process {
      */
     getCommand() {
         return this._command;
-    }
-
-    /**
-     * Tells whether the this process has finished executing.
-     *
-     * @returns {boolean}
-     */
-    isFinished() {
-        return this._finished;
     }
 }
 
