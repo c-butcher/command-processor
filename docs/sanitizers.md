@@ -5,10 +5,13 @@ Without sanitation our process would throw an error and stop working. So to make
 sure that doesn't happen, we need to sanitize our data.
 
 ## Why No Sanitizers?
-The command processor doesn't ship with sanitizers or validators because they are
-separate components which are outside the scope of this project. It also seems
-conceited to tell you which sanitizers to use, so instead we created ways for you
-to implement your own sanitizers using either callbacks and/or events.
+We do have a `data-sanitizers` package that integrates seamlessly just by installing
+it using the node package manager, but the command processor doesn't ship with sanitizers
+because they are considered a separate component that's outside the scope of this project.
+
+We also understand that our sanitizers aren't the perfect solution to every problem,
+and that some people might want to use other packages. So we created ways for you to
+implement your own sanitizers using either callbacks and / or events.
 
 ## Using the Sanitize Callback
 One way to sanitize your data is to use the `sanitize` callback in the `Input` options.
@@ -30,15 +33,34 @@ let age = new Input(new StringCommand(null, { text: '20 Years' }), {
 });
 ```
 
-## Sanitation Event
-The sanitation event is fired every time an input value is assigned, and right before the
-value is assigned. So when you want to apply a sanitizer to all values for a specific type,
-such as all the "number" inputs, then you would want to register a sanitation event.
+## Using the Sanitation Event
+The sanitation event is the best way to register a global sanitation method, as the event
+fires for every input, right before the value is assigned. The only time a sanitation
+event would be skipped, is if the input used a sanitation callback instead.
+
+The sanitation event also allows us to pass sanitation options to it by assigning
+an object to the `sanitize` property of our Input object...
+
+```javascript
+let cost = new Input(new NumberCommand(null, { number: 1299.997 }), {
+    name: 'cost',
+    type: 'money',
+    lookup: 'number',
+    
+    // These are the options to pass to our sanitation event
+    sanitize: {
+        prefix: '$',
+        separator: ',',
+        decimals: 2
+    }
+});
+```
+
+Now our sanitation method knows our "money" value should be prefixed with a US dollar
+sign, separated by commas and have two decimal places. So our value of `1299.997`
+gets transformed into `$1,299.99`.
 
 ### Input Sanitation Event
-The `InputSanitationEvent` gives you access to the type, value and sanitation options for
-the input.
-
 | Method                     | Description                                                     |
 |----------------------------|-----------------------------------------------------------------|
 | getType() : string         | Tells us what type of data the input value is supposed to have. |
