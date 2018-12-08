@@ -1,3 +1,7 @@
+[Home](../README.md) > Input Sanitation
+
+<hr>
+
 # Input Sanitation
 Sometimes our commands need to clean their inputs, like when a multiplication
 command receives a string value of "20 Years" instead of a numeric value of 20.
@@ -5,8 +9,8 @@ Without sanitation our process would throw an error and stop working. So to make
 sure that doesn't happen, we need to sanitize our data.
 
 - [Where are the Sanitizers?](#where-are-the-sanitizers)
-- [Using the Sanitize Callback](#using-the-sanitize-callback)
-- [Sanitation Event](#using-the-sanitation-event)
+- [Sanitize Callback](#sanitize-callback)
+- [Sanitation Event](#sanitation-event)
     - [Event Object](#event-object)
     - [Event Example](#event-example)
 
@@ -24,7 +28,7 @@ We also understand that our sanitizers aren't the perfect solution to every prob
 and that some people might want to use other packages. So we created ways for you to
 implement your own sanitizers using either callbacks and / or events.
 
-## Using the Sanitize Callback
+## Sanitize Callback
 One way to sanitize your data is to use the `sanitize` callback in the `Input` options.
 Using callbacks will make it so the sanitation event doesn't fire for this input. The
 callback is simple, and takes the original dirty value as an argument, and returns
@@ -123,3 +127,7 @@ extra overhead, you should register just one method that handles all of the data
 
 You can see an example in the way we implemented the
 [data-sanitizers](../src/subscribers/sanitation.js) subscriber.
+
+<hr>
+
+[Home](../README.md) > Input Sanitation

@@ -3,15 +3,25 @@
 [![Build Status](https://travis-ci.com/c-butcher/command-processor.svg?branch=master)](https://travis-ci.com/c-butcher/command-processor)
 [![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://travis-ci.com/c-butcher/command-processor)
 
-### Installation
-First you'll need to have NodeJS installed on your computer. Then uou can install our command-processor module
+## Documentation
+- [Installation](#installation)
+- [Definitions](#definitions)
+- [Processes](docs/processes.md)
+- [Commands](docs/commands.md)
+- [Dispatchers](docs/dispatchers.md)
+- [Inputs](#input-object)
+  - [Sanitation](docs/sanitizers.md)
+  - [Validation](docs/validators.md)
+
+## Installation
+First you'll need to have NodeJS installed on your computer. Then you can install our command-processor module
 by opening your terminal and typing the following command...
 
 ```bash
 > npm install --save command-processor
 ```
 
-### Definitions
+## Definitions
 | Word       | Definition |
 |------------|------------|
 | Process    | A group of commands working together towards a purpose. |
@@ -21,10 +31,7 @@ by opening your terminal and typing the following command...
 | Processing | The execution and transfer of data from one command to the next |
 | Branch     | Branches are created when a command executes two or more inputs commands. | 
 
-### Processes
-Processes are groups of commands that work together towards a goal. One command passing its
-output to another command until the final goal has been achieved.
-
+## Processes
 All processes have some type of end-goal, such as a web application returning an HTTP response,
 or a CLI application returning an exit code. We use these end-goal as the **initiator**
 command, and it's where we will start building our process from. This command is highlighted
@@ -32,11 +39,10 @@ with green in the image below....
 
 ![Rest Example](docs/images/rest-example.jpg)
 
-The **terminator** commands are used to complete the execution of a chain. Terminator are commands that don't have any -required- inputs, and can be executed without having to depend on any
-other commands. 
+The **terminator** commands are used to complete the execution of a branch. Terminator are commands that don't have any
+-required- inputs, and can be executed without having to depend on any other commands. 
 
-### Input
-
+### Input Object
 | Option      | Required | Default  |Type               | Description |
 |-------------|:--------:|----------|-------------------|------------------------------------------------------------------------|
 | key         | No       | null     | string            | The computer readable name with only letters, numbers and underscores. |
@@ -49,73 +55,7 @@ other commands.
 | sanitize    | No       | null     | function / object | Contains a sanitation function, or an object with sanitation options.  |
 | validate    | No       | null     | function / object | Contains a validation function, or an object with validation options.  |
 
-### Building a Command
-You can see an example of a command below. Don't be worried about the size of the command,
-over 80% of the code is for describing the command to others, and in a few minutes you'll
-completely understand every part about how the command object works.
 
-1. Inputs (Arguments)
-2. Options (Config Values)
-3. Outputs (Return Values)
-
-```javascript
-const Command = require('command-processor').Command;
-
-class FindByCommand extends Command {
-    static describe() {
-        return {
-            key: 'find_by',
-            name: 'Find By',
-            description: 'Find a database model by specific keywords.',
-            inputs: {
-                keywords: {
-                    type: 'object',
-                    required: true,
-                    description: "The search keywords."
-                },
-                scheme: {
-                    type: 'string',
-                    required: true,
-                    description: "The search keywords."
-                }
-            },
-            outputs: {
-                models: {
-                    type: 'array',
-                    description: 'The database model(s) that were found.'
-                }
-            },
-            options: {
-                scheme: {
-                    type: 'string',
-                    required: true,
-                    sanitize: true,
-                    description: "The database scheme that will be looked in."
-                }
-            }
-        }
-    }
-    
-    execute(app) {
-        if (!(app instanceof AppDispatcher)) {
-            return null;
-        }
-        
-        let keywords = this.inputs.get('keywords');
-        let scheme   = this.options.get('scheme');
-        
-        let models = app.find(scheme)
-                        .by(keywords);
-        
-        return {
-            models
-        };
-    }
-}
-
-module.exports = FindByCommand;
-
-```
 ### Validation and Sanitation
 The command processor does not have any validation or sanitation built-in directly, but we do have
 an event system for handling both of these issues. The easiest way to get sanitation and validation working
