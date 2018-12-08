@@ -4,7 +4,7 @@ const Events = require('../events');
 /**
  * @var {InputEvent} event
  */
-Events.on(Events.INPUT_VALIDATED, /** @param {InputValidationEvent} event */ (event) => {
+Events.on(Events.INPUT_VALIDATION, /** @param {InputValidationEvent} event */ (event) => {
     let type    = event.getType();
     let value   = event.getValue();
     let options = event.getOptions();

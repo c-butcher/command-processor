@@ -6,8 +6,8 @@ class Events extends EventEmitter {
     constructor() {
         super();
 
-        this.INPUT_VALIDATED = 'command.input.validated';
-        this.INPUT_SANITIZED = 'command.input.sanitized';
+        this.INPUT_VALIDATION = 'input.validation';
+        this.INPUT_SANITATION = 'input.sanitation';
 
         this.COMMAND_STARTED  = 'command.started';
         this.COMMAND_FINISHED = 'command.finished';

@@ -165,7 +165,7 @@ class Input {
         }
 
         let event = new InputSanitationEvent(this._type, this._value, options);
-        Events.emit(Events.INPUT_SANITIZED, event);
+        Events.emit(Events.INPUT_SANITATION, event);
 
         if (typeof event.getSanitized() !== "undefined") {
             this._value = event.getSanitized();
@@ -191,7 +191,7 @@ class Input {
         }
 
         let event = new InputValidationEvent(this, options, errors);
-        Events.emit(Events.INPUT_VALIDATED, event);
+        Events.emit(Events.INPUT_VALIDATION, event);
 
         return event.getErrors();
     }
