@@ -4,10 +4,21 @@ command receives a string value of "20 Years" instead of a numeric value of 20.
 Without sanitation our process would throw an error and stop working. So to make
 sure that doesn't happen, we need to sanitize our data.
 
-## Why No Sanitizers?
-We do have a `data-sanitizers` package that integrates seamlessly just by installing
-it using the node package manager, but the command processor doesn't ship with sanitizers
-because they are considered a separate component that's outside the scope of this project.
+- [Where are the Sanitizers?](#where-are-the-sanitizers)
+- [Using the Sanitize Callback](#using-the-sanitize-callback)
+- [Sanitation Event](#using-the-sanitation-event)
+    - [Event Object](#event-object)
+    - [Event Example](#event-example)
+
+
+## Where are the Sanitizers?
+The command processor doesn't ship with any sanitizers because they are considered a
+separate component that's outside the scope of this project. We do have a `data-sanitizers`
+package that integrates seamlessly, and you can install it using the node package manager...
+
+```bash
+> npm install --save data-sanitizers
+```
 
 We also understand that our sanitizers aren't the perfect solution to every problem,
 and that some people might want to use other packages. So we created ways for you to
@@ -33,13 +44,15 @@ let age = new Input(new StringCommand(null, { text: '20 Years' }), {
 });
 ```
 
-## Using the Sanitation Event
+## Sanitation Event
 The sanitation event is the best way to register a global sanitation method, as the event
 fires for every input, right before the value is assigned. The only time a sanitation
 event would be skipped, is if the input used a sanitation callback instead.
 
-The sanitation event also allows us to pass sanitation options to it by assigning
-an object to the `sanitize` property of our Input object...
+### Sanitation Options
+The sanitation event also pass sanitation options when you assign an object to the
+`sanitize` property on our Input object. This lets our sanitizers get fancy, and allows
+us to customize the way our values look.
 
 ```javascript
 let cost = new Input(new NumberCommand(null, { number: 1299.997 }), {
@@ -60,7 +73,7 @@ Now our sanitation method knows our "money" value should be prefixed with a US d
 sign, separated by commas and have two decimal places. So our value of `1299.997`
 gets transformed into `$1,299.99`.
 
-### Input Sanitation Event
+### Event Object
 | Method                     | Description                                                     |
 |----------------------------|-----------------------------------------------------------------|
 | getType() : string         | Tells us what type of data the input value is supposed to have. |
@@ -69,10 +82,10 @@ gets transformed into `$1,299.99`.
 | getSanitized() : any       | Returns the sanitized value.                                    |
 | setSanitized(value : any) : void | Allows us to set the final sanitized value.                     | 
 
-### Sanitation Event Example
-You can see an example of a number sanitizer below. The event fires every
-time an input value is about to be assigned, and it only sanitizes the
-values that have an input type of "number".
+### Event Example
+There is an example of a number sanitizer below. The event fires every
+time an input value is about to be assigned, and this specific method
+only sanitizes the values that are a "number" type.
 
 ```javascript
 const Events = require( 'command-processor' ).Events;
@@ -104,11 +117,9 @@ function sanitizeNumber( event ) {
 Events.on( Events.INPUT_SANITATION ,  sanitizeNumber );
 ```
 
-Now lets say you have 10 different sanitation methods. You don't want to execute
-ten sanitation methods every time an input is assigned. If your process has 100
-inputs (which is easy to do) that would be 1,000 function calls, 900 of which we
-didn't need.
+The example above shows a single sanitation method, but in reality you'd probably have
+ten or more sanitation methods. Instead of registering them all separately, which causes
+extra overhead, you should register just one method that handles all of the data-types.
 
-So what you'll probably want is to create a single sanitation method that can
-handle all the input types, like what we have with the
+You can see an example in the way we implemented the
 [data-sanitizers](../src/subscribers/sanitation.js) subscriber.
