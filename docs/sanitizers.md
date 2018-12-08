@@ -90,13 +90,12 @@ sign, separated by commas and have two decimal places. So the value of `1299.997
 gets transformed into `$1,299.99`.
 
 ### Event Object
-| Method                     | Description                                                     |
-|----------------------------|-----------------------------------------------------------------|
-| getType() : string         | Tells us what type of data the input value is supposed to have. |
-| getValue() : any           | Returns the value received from the input command.              |
-| getOptions() : object      | The configuration options for the sanitizer.                    |
-| getSanitized() : any       | Returns the sanitized value.                                    |
-| setSanitized(value : any) : void | Allows us to set the final sanitized value.                     | 
+| Method          | Returns | Description                                                     |
+|-----------------|---------|-----------------------------------------------------------------|
+| getType()       | string  | The type of data the input value is supposed to have.           |
+| getOptions()    | object  | The configuration options for the sanitizer.                    |
+| getValue()      | any     | Returns the value that was received from the input command.     |
+| setValue(value) | any     | Sets the sanitized value.                                       | 
 
 ### Event Example
 There is an example of a number sanitizer below. The event fires every
