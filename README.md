@@ -49,7 +49,6 @@ other commands.
 | sanitize    | No       | null     | function / object | Contains a sanitation function, or an object with sanitation options.  |
 | validate    | No       | null     | function / object | Contains a validation function, or an object with validation options.  |
 
-
 ### Building a Command
 You can see an example of a command below. Don't be worried about the size of the command,
 over 80% of the code is for describing the command to others, and in a few minutes you'll
@@ -115,8 +114,8 @@ class FindByCommand extends Command {
 }
 
 module.exports = FindByCommand;
-```
 
+```
 ### Validation and Sanitation
 The command processor does not have any validation or sanitation built-in directly, but we do have
 an event system for handling both of these issues. The easiest way to get sanitation and validation working
@@ -131,6 +130,6 @@ is to install the [data-sanitizers](https://github.com/c-butcher/data-sanitizers
 The command processor will detect the packages above and start using them immediately without having
 to do any configuration. Pretty neat, right?
 
-
 We also know that sometimes our sanitation and validation packages won't be the solution that you're looking for,
-in which case you can check out how to [create your own custom validators and sanitizers](docs/creating-validators-and-sanitizers.md).
+in which case you can check out how to create custom [sanitizers](docs/sanitizers.md) and [validators](docs/validators.md)
+for your project.
