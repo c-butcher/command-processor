@@ -54,9 +54,9 @@ fires for every input, right before the value is assigned. The only time a sanit
 event would be skipped, is if the input used a sanitation callback instead.
 
 ### Sanitation Options
-The sanitation event also pass sanitation options when you assign an object to the
-`sanitize` property on our Input object. This lets our sanitizers get fancy, and allows
-us to customize the way our values look.
+The event also passes sanitation options when an object is assigned to the `sanitize`
+property on the Input object. This lets the sanitizers get fancy, and allows them to
+customize the way the values look.
 
 ```javascript
 let cost = new Input(new NumberCommand(null, { number: 1299.997 }), {
@@ -73,8 +73,8 @@ let cost = new Input(new NumberCommand(null, { number: 1299.997 }), {
 });
 ```
 
-Now our sanitation method knows our "money" value should be prefixed with a US dollar
-sign, separated by commas and have two decimal places. So our value of `1299.997`
+Now the sanitation method knows our "money" value should be prefixed with a US dollar
+sign, separated by commas and have two decimal places. So the value of `1299.997`
 gets transformed into `$1,299.99`.
 
 ### Event Object
@@ -121,12 +121,10 @@ function sanitizeNumber( event ) {
 Events.on( Events.INPUT_SANITATION ,  sanitizeNumber );
 ```
 
-The example above shows a single sanitation method, but in reality you'd probably have
-ten or more sanitation methods. Instead of registering them all separately, which causes
-extra overhead, you should register just one method that handles all of the data-types.
-
-You can see an example in the way we implemented the
-[data-sanitizers](../src/subscribers/sanitation.js) subscriber.
+The example above shows a single sanitation method, but in reality a project would have
+ten or more methods. Instead of registering them all separately, which causes extra overhead,
+register just one method that handles all the data-types. You can see an example in the way
+we implemented the [data-sanitizers](../src/subscribers/sanitation.js) event listener.
 
 <hr>
 
