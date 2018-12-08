@@ -118,7 +118,7 @@ class Command {
     }
 
     /**
-     * Executes the input command and then sets the inputs value from the results.
+     * Executes the input command and then sets the input value from the results.
      *
      * @param {Input} input
      * @param {Dispatcher} dispatcher
@@ -132,6 +132,8 @@ class Command {
             let lookup  = input.getLookup();
             let command = input.getCommand();
 
+            // We execute the command and wait for it to completely finish before we can continue.
+            // This is because the current command depends on the results of this other command.
             let results = await command.process(dispatcher);
             if (!results || typeof results[lookup] === "undefined") {
                 let error = new CommandError("Command '{command}' did not have '{lookup}' output.", {
@@ -139,21 +141,37 @@ class Command {
                     command,
                 });
 
-                return reject(error);
+                // Sometimes the input isn't required, and we only want to
+                // stop processing when we can't find the "required" inputs.
+                if (input.isRequired()) {
+                    return reject(error);
+                }
+
+                // When the input is optional, then it's okay to continue
+                // processing, but we should really throw a warning.
+                // @TODO Throw a "Warning: Optional parameter not found" message
+                return resolve(dispatcher);
             }
 
+            // Set the un-sanitized value
             input.setValue(results[lookup]);
 
+            // Since this package doesn't have sanitizers, we decided to
+            // fire an event here so that other packages can handle the sanitation.
             if (input.shouldSanitize()) {
                 input.sanitize();
             }
 
+            // Since this package doesn't have validators, we decided to
+            // fire an event here so that other packages can handle the validation.
             if (input.shouldValidate()) {
                 input.validate();
             }
 
+            // Then we set the sanitized/validated value for the end-user to access.
             this.inputs.set(input.getName(), input.getValue());
 
+            // and this input has finito'ed.
             resolve(dispatcher);
         });
     }
