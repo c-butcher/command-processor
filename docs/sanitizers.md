@@ -89,4 +89,4 @@ didn't need.
 
 So what you'll probably want is to create a single sanitation method that can
 handle all the input types, like what we have with the
-[data-sanitizers](../src/subscribers/sanitation.js) event subscriber.
+[data-sanitizers](../src/subscribers/sanitation.js) subscriber.

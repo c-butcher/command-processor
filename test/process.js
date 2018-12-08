@@ -64,7 +64,7 @@ describe('Process', function() {
 
             process.run().then((results) => {
                 expect(results).to.have.property('value');
-            }).catch(e => console.log(e)).finally(done);
+            }).then(done).catch(e => console.log(e));
         });
     });
 
@@ -122,7 +122,7 @@ describe('Process', function() {
 
             process.run().then((results) => {
                 expect(results).to.be.an('object');
-            }).finally(done).catch(e => console.log(e));
+            }).then(done).catch(e => console.log(e));
         });
 
         it('passes when a process returns an empty result before running', () => {
