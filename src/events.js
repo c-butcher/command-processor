@@ -11,6 +11,8 @@ class Events extends EventEmitter {
 
         this.COMMAND_STARTED  = 'command.started';
         this.COMMAND_FINISHED = 'command.finished';
+
+        this.LOAD_COMMANDS = 'load.commands';
     }
 
     /**
