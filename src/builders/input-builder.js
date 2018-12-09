@@ -1,6 +1,16 @@
+const Input = require('../input');
+const Command = require('../command');
+const BuildError = require('formatted-error');
+
 class InputBuilder {
-    constructor(input, sender) {
-        this._name = input;
+    /**
+     * Builder for creating an Input.
+     *
+     * @param {string} name
+     * @param {InputBuilder|ProcessBuilder|null} sender
+     */
+    constructor(name, sender = null) {
+        this._name = name;
         this._sender = sender;
         this._inputs = [];
     }
@@ -26,8 +36,30 @@ class InputBuilder {
      *
      * @returns {InputBuilder}
      */
-    in(command) {
+    using(command) {
         this._command = command;
+
+        return this;
+    }
+
+    /**
+     * Just a continuation to make the chain read easier.
+     *
+     * @returns {InputBuilder}
+     */
+    then() {
+        return this;
+    }
+
+    /**
+     * Tells us what options to use with our command.
+     *
+     * @param {object} options
+     *
+     * @returns {InputBuilder}
+     */
+    with(options = {}) {
+        this._options = options;
 
         return this;
     }
@@ -91,7 +123,7 @@ class InputBuilder {
      *
      * @returns {InputBuilder}
      */
-    sanitize(option = {}) {
+    cleanWith(option = {}) {
         this._sanitize = option;
 
         return this;
@@ -104,10 +136,47 @@ class InputBuilder {
      *
      * @returns {InputBuilder}
      */
-    validate(option = {}) {
+    checkWith(option = {}) {
         this._validate = option;
 
         return this;
+    }
+
+    /**
+     * Builds and returns a new Input.
+     *
+     * @returns {Input}
+     */
+    build() {
+        return new Promise(async (resolve, reject) => {
+            let inputs = [];
+            for (let input of this._inputs) {
+                inputs.push( await input.build() );
+            }
+
+            let command = this._command;
+            if (typeof command === 'function') {
+                command = new this._command(inputs, this._options);
+
+            } else if (command instanceof Command) {
+                command = new this._command.constructor(inputs, this._options);
+
+            } else {
+                return reject(new BuildError("Input command must implement abstract Command."));
+            }
+
+            let input = new Input(command, {
+                name: this._name,
+                type: this._type,
+                lookup: this._lookup,
+                default: this._default,
+                required: this._required,
+                sanitize: this._sanitize,
+                validate: this._validate,
+            });
+
+            resolve(input);
+        });
     }
 
     /**
@@ -116,11 +185,7 @@ class InputBuilder {
      * @returns {Promise<InputBuilder|ProcessBuilder>}
      */
     end() {
-        return new Promise((resolve, reject) => {
-
-
-            resolve(this._sender);
-        });
+        return this._sender;
     }
 }
 
