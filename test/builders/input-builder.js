@@ -155,5 +155,17 @@ describe('Input Builder', () => {
             assert.isDefined(results.value);
             assert.equal(results.value, 15);
         });
+
+        it('passes when it throws an error for invalid commands', (done) => {
+            let builder = new InputBuilder('value')
+                .from('value')
+                .as('number')
+                .using(Commands.NoCommandExists);
+
+            builder.build().catch(error => {
+                assert.instanceOf(error, Error);
+                done();
+            });
+        });
     });
 });
