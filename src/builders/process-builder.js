@@ -1,7 +1,8 @@
-const InputBuilder = require('./input-builder');
 const BuildError = require('formatted-error');
-const Process = require('../process');
 const Command = require('../command');
+const Dispatcher = require('../dispatcher');
+const InputBuilder = require('./input-builder');
+const Process = require('../process');
 
 class ProcessBuilder {
     /**
@@ -35,7 +36,7 @@ class ProcessBuilder {
      * @returns {InputBuilder}
      */
     fetch(output) {
-        let builder = new InputBuilder(output);
+        let builder = new InputBuilder(output, this);
 
         this._inputs.push(builder);
 
@@ -49,12 +50,17 @@ class ProcessBuilder {
      */
     build() {
         return new Promise(async (resolve, reject) => {
+            // Make sure that the dispatcher is legit.
+            if (!(this._dispatcher instanceof Dispatcher)) {
+                return reject(new BuildError("Dispatcher must be an instance of Dispatcher."));
+            }
+
             let inputs = [];
 
             //  Go through all of our inputs
-            for (let input in this._inputs) {
+            for (let input of this._inputs) {
                 // and make sure they all load before we continue.
-                await input.build().then(inputs.push);
+                inputs.push( await input.build().catch(reject) );
             }
 
             let command = this._command;
@@ -62,12 +68,12 @@ class ProcessBuilder {
             // If the command is a callable function,
             if (typeof this._command === 'function') {
                 // then all we need to do is initialize it,
-                command = this._command(inputs, this._options);
+                command = new this._command(inputs, this._options);
 
             // but if the command is already initialized,
             } else if (this._command instanceof Command) {
                 // then we need to re-initialize with our new inputs and options.
-                command = this._command.constructor(inputs, this._options);
+                command = new this._command.constructor(inputs, this._options);
 
             } else {
                 // the process just got boinked!
@@ -77,6 +83,16 @@ class ProcessBuilder {
             // Let's just hope we get this result...
             resolve(new Process(this._dispatcher, command));
         });
+    }
+
+    /**
+     * This is the top of the building structure, so since there
+     * isn't anything above us, we return our-self.
+     *
+     * @returns {ProcessBuilder}
+     */
+    end() {
+        return this;
     }
 }
 
