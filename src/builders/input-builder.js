@@ -142,7 +142,7 @@ class InputBuilder {
         return new Promise(async (resolve, reject) => {
             let inputs = [];
             for (let input of this._inputs) {
-                inputs.push( await input.build() );
+                inputs.push( await input.build().catch(reject) );
             }
 
             let command = this._command;
@@ -173,7 +173,7 @@ class InputBuilder {
     /**
      * Finishes this input builder.
      *
-     * @returns {Promise<InputBuilder|ProcessBuilder>}
+     * @returns {InputBuilder|ProcessBuilder}
      */
     end() {
         return this._sender;
