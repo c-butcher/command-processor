@@ -43,15 +43,6 @@ class InputBuilder {
     }
 
     /**
-     * Just a continuation to make the chain read easier.
-     *
-     * @returns {InputBuilder}
-     */
-    then() {
-        return this;
-    }
-
-    /**
      * Tells us what options to use with our command.
      *
      * @param {object} options
