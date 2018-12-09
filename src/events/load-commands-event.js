@@ -1,4 +1,5 @@
 const LoadError = require('formatted-error');
+const Command = require('../command');
 
 class LoadCommandsEvent {
     /**
@@ -11,21 +12,17 @@ class LoadCommandsEvent {
     /**
      * Adds a single command to a group.
      *
-     * @param {Command|function} command
+     * @param {function} command
      * @param {string} group
      *
      * @return {LoadCommandsEvent}
      */
-    addCommand(command, group = 'Default') {
-        if (command instanceof Command) {
-            command = command.constructor;
-        }
-
-        if (typeof command !== 'function' || typeof command.execute !== 'function') {
+    addCommand(command, group = 'default') {
+        if (typeof command !== 'function' || command.__proto__ !== Command) {
             throw new LoadError("Loaded command must implement abstract Command");
         }
 
-        let key = command.constructor.describe().key;
+        let key = command.prototype.constructor.describe().key;
 
         let commands = this.getGroup(group);
         commands.set(key, command);
@@ -48,14 +45,15 @@ class LoadCommandsEvent {
 
         let group = this.getGroup(name);
 
+
         for (let command of commands) {
-            if (typeof command !== 'function' || command.execute !== 'function') {
+            if (typeof command !== 'function' || command.__proto__ !== Command) {
                 throw new LoadError("Command group '{name}' has an invalid command.", {
                     name
                 });
             }
 
-            let key = command.constructor.describe().key;
+            let key = command.prototype.constructor.describe().key;
 
             group.set(key, command);
         }
